@@ -46,10 +46,12 @@ export const ResultCard = ({ image, result, onReset }) => {
                     Simpan ke Laporan
                 </button>
                  <button 
-                    onClick={onReset}
-                    className="w-full bg-gray-200 text-charcoal font-semibold py-3 px-4 rounded-xl hover:bg-gray-300 transition-all flex items-center justify-center gap-2">
-                    <Redo2 className="h-5 w-5" />
-                    Pindai Gambar Lain
+                    onClick={handleSaveReport}
+                    // Ganti className="..." dengan ini
+                    className="w-full bg-sage text-white font-semibold py-3 px-4 rounded-xl hover:bg-green-800 transition-all flex items-center justify-center gap-2"
+                >
+                    <FileText className="h-5 w-5" />
+                    Simpan ke Laporan
                 </button>
             </div>
         </div>

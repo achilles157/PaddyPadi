@@ -1,39 +1,47 @@
-import React, { createContext, useState, useContext } from 'react';
-import { loginUser as apiLogin } from '../services/authService'; // Impor service dummy
+import { auth } from '../services/firebase'; // Impor auth dari firebase
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+} from "firebase/auth";
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    // Coba ambil user dari localStorage jika ada sesi sebelumnya
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('paddyUser')));
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const login = async (credentials) => {
-        const response = await apiLogin(credentials.email, credentials.password);
-        if (response.success) {
-            localStorage.setItem('paddyUser', JSON.stringify(response.user));
-            setUser(response.user);
-        }
-        // Tambahkan penanganan error nanti
+    const register = (email, password) => {
+        return createUserWithEmailAndPassword(auth, email, password);
+    };
+
+    const login = (email, password) => {
+        return signInWithEmailAndPassword(auth, email, password);
     };
 
     const logout = () => {
-        localStorage.removeItem('paddyUser');
-        setUser(null);
+        return signOut(auth);
     };
 
-    const value = { user, isAuthenticated: !!user, login, logout };
+    useEffect(() => {
+        // Listener ini akan memantau status login pengguna secara real-time
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
 
+    const value = { user, isAuthenticated: !!user, login, logout, register };
+
+    // Tampilkan loading screen jika status auth belum jelas
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+export const useAuth = () => useContext(AuthContext);

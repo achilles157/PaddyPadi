@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 // Anda bisa memisahkan ini menjadi komponen sendiri nanti
 const AuthForm = ({ isLogin, onSubmit }) => {
@@ -40,13 +41,23 @@ const AuthForm = ({ isLogin, onSubmit }) => {
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const { login } = useAuth();
+    const { login, register } = useAuth(); // Asumsikan ada fungsi register nanti
     const navigate = useNavigate();
 
     const handleAuth = async (credentials) => {
-        // Panggil service dummy Anda, lalu login
-        await login(credentials);
-        navigate('/scan'); // Arahkan ke halaman utama setelah login
+        try {
+            if (isLogin) {
+                await login(credentials.email, credentials.password);
+                toast.success('Login berhasil!');
+            } else {
+                // await register(credentials.email, credentials.password);
+                toast.success('Registrasi berhasil! Silakan login.');
+                setIsLogin(true); // Arahkan ke form login setelah register
+            }
+            navigate('/scan');
+        } catch (error) {
+            toast.error(error.message || 'Gagal melakukan otentikasi.');
+        }
     };
 
     return (
