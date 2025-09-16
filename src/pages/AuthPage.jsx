@@ -41,23 +41,27 @@ const AuthForm = ({ isLogin, onSubmit }) => {
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const { login, register } = useAuth(); // Asumsikan ada fungsi register nanti
+    const { login, register } = useAuth();
     const navigate = useNavigate();
 
     const handleAuth = async (credentials) => {
-        try {
-            if (isLogin) {
-                await login(credentials.email, credentials.password);
-                toast.success('Login berhasil!');
-            } else {
-                // await register(credentials.email, credentials.password);
-                toast.success('Registrasi berhasil! Silakan login.');
-                setIsLogin(true); // Arahkan ke form login setelah register
-            }
-            navigate('/scan');
-        } catch (error) {
-            toast.error(error.message || 'Gagal melakukan otentikasi.');
-        }
+        const authPromise = isLogin 
+            ? login(credentials.email, credentials.password)
+            : register(credentials.email, credentials.password);
+
+        toast.promise(authPromise, {
+            loading: isLogin ? 'Mencoba login...' : 'Mendaftarkan akun...',
+            success: (result) => {
+                if (isLogin) {
+                    navigate('/scan'); // Hanya redirect setelah login berhasil
+                    return 'Login berhasil!';
+                } else {
+                    setIsLogin(true); // Pindahkan ke mode login setelah register
+                    return 'Registrasi berhasil! Silakan login.';
+                }
+            },
+            error: (err) => err.message || 'Terjadi kesalahan.',
+        });
     };
 
     return (
