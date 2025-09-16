@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ImageUploader } from '../components/common/ImageUploader'; // Pastikan path benar
-import { Spinner } from '../components/common/Spinner'; // Pastikan path benar
-import { dummyPredict } from '../utils/dummyModel'; // Pastikan path benar
+import { ImageUploader } from '../components/common/ImageUploader';
 import { CameraScanner } from '../components/common/CameraScanner';
-import { useState } from 'react';
+import { Spinner } from '../components/common/Spinner';
+import { runExpertModel } from '../services/predictionService'; // <-- Impor service baru
+import toast from 'react-hot-toast';
 
 const ScanPage = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [scanMode, setScanMode] = useState('upload');
 
-    const handleImageUpload = async (imageFile) => {
+    const handlePrediction = async (imageFile) => {
         setIsLoading(true);
-        const result = await dummyPredict(imageFile);
-        navigate('/result', { state: { image: imageFile, result } });
+        try {
+            const result = await runExpertModel(imageFile);
+            navigate('/result', { state: { image: imageFile, result } });
+        } catch (error) {
+            toast.error("Gagal terhubung ke server. Coba lagi.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (isLoading) {
@@ -36,9 +42,10 @@ const ScanPage = () => {
                 <button onClick={() => setScanMode('camera')} className={`px-8 py-2 rounded-full font-semibold ${scanMode === 'camera' ? 'bg-white shadow' : ''}`}>Kamera</button>
             </div>
             {scanMode === 'upload' ? (
-                <ImageUploader onImageUpload={handleImageUpload} />
+                <ImageUploader onImageUpload={handlePrediction} />
             ) : (
-                <CameraScanner onCapture={handleImageUpload} />
+                // handlePrediction akan dipanggil oleh onCapture di CameraScanner
+                <CameraScanner onCapture={handlePrediction} />
             )}
         </div>
     );
