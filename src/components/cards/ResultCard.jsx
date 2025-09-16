@@ -17,12 +17,12 @@ export const ResultCard = ({ image, result, onReset }) => {
                 console.log("Laporan yang akan disimpan:", reportData);
                 // Di sini, Anda akan memanggil fungsi dari service untuk mengirim data ke backend
                 // reportService.save(reportData);
-                alert('Laporan berhasil disimpan dengan data lokasi!');
+                toast.success('Laporan disimpan dengan data lokasi!');
             },
             (error) => {
                 console.warn("Gagal mendapatkan lokasi:", error.message);
                 // Tetap simpan laporan meskipun tanpa data lokasi
-                alert('Laporan disimpan (tanpa data lokasi).');
+                toast.success('Laporan disimpan (tanpa data lokasi).');
             }
         );
     };
