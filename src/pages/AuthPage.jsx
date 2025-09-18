@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-// Anda bisa memisahkan ini menjadi komponen sendiri nanti
 const AuthForm = ({ isLogin, onSubmit }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,36 +30,30 @@ const AuthForm = ({ isLogin, onSubmit }) => {
                 required 
             />
             <button type="submit" className="w-full bg-sage text-white font-bold py-3 px-4 rounded-lg hover:bg-green-800 transition-all">
-                {isLogin ? 'Login' : 'Register'}
+                {isLogin ? 'Login' : 'Daftar'}
             </button>
         </form>
     );
 };
 
-
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
     const { login, register } = useAuth();
-    const navigate = useNavigate();
 
-    const handleAuth = async (credentials) => {
-        const authPromise = isLogin 
-            ? login(credentials.email, credentials.password)
-            : register(credentials.email, credentials.password);
-
-        toast.promise(authPromise, {
-            loading: isLogin ? 'Mencoba login...' : 'Mendaftarkan akun...',
-            success: (result) => {
-                if (isLogin) {
-                    navigate('/scan'); // Hanya redirect setelah login berhasil
-                    return 'Login berhasil!';
-                } else {
-                    setIsLogin(true); // Pindahkan ke mode login setelah register
-                    return 'Registrasi berhasil! Silakan login.';
-                }
-            },
-            error: (err) => err.message || 'Terjadi kesalahan.',
-        });
+    const handleAuth = async ({ email, password }) => {
+        try {
+            if (isLogin) {
+                await login(email, password);
+                toast.success('Login berhasil!');
+                // Navigasi akan ditangani secara otomatis oleh router
+            } else {
+                await register(email, password);
+                toast.success('Registrasi berhasil! Silakan login.');
+                setIsLogin(true); // Arahkan ke form login
+            }
+        } catch (error) {
+            toast.error(error.code || 'Terjadi kesalahan otentikasi.');
+        }
     };
 
     return (
@@ -76,7 +68,7 @@ const AuthPage = () => {
             <AuthForm isLogin={isLogin} onSubmit={handleAuth} />
 
             <button onClick={() => setIsLogin(!isLogin)} className="mt-6 text-sm text-charcoal hover:underline">
-                {isLogin ? 'Belum punya akun? Register' : 'Sudah punya akun? Login'}
+                {isLogin ? 'Belum punya akun? Daftar' : 'Sudah punya akun? Login'}
             </button>
         </div>
     );
