@@ -10,12 +10,11 @@ import toast from 'react-hot-toast';
 export default function ScanPage() {
     const [modelStatus, setModelStatus] = useState('loading');
     const [scanMode, setScanMode] = useState('upload');
-    
-    // State khusus untuk mode kamera real-time
+    const navigate = useNavigate();
+
+    // Logika untuk mode kamera real-time tetap di sini
     const [detectionResult, setDetectionResult] = useState('Arahkan ke daun padi');
     const [isSuspicious, setIsSuspicious] = useState(false);
-
-    const navigate = useNavigate();
     const cameraRef = useRef(null);
     const requestRef = useRef();
     const isDetecting = useRef(true);
@@ -54,23 +53,12 @@ export default function ScanPage() {
             cancelAnimationFrame(requestRef.current);
         };
     }, [modelStatus, scanMode, detectionLoop]);
-
-    // Handler untuk prediksi dari file yang diunggah
-    const handleUploadPrediction = async (imageSrc, imageElement) => {
-        try {
-            const screenerResult = await predictionService.runScreenerModel(imageElement);
-            navigate('/result', { state: { imageSrc, screenerResult } });
-        } catch (error) {
-            toast.error("Gagal melakukan prediksi. Coba lagi.");
-        }
-    };
     
-    // Handler untuk mengambil gambar dari mode kamera
     const handleCameraCapture = () => {
         if (cameraRef.current) {
-            isDetecting.current = false; // Hentikan loop
+            isDetecting.current = false;
             const imageSrc = cameraRef.current.takePicture();
-            const screenerResult = { prediction: detectionResult, confidence: null }; // Kirim hasil deteksi terakhir
+            const screenerResult = { prediction: detectionResult, confidence: null };
             navigate('/result', { state: { imageSrc, screenerResult } });
         }
     };
@@ -98,7 +86,8 @@ export default function ScanPage() {
 
             <div>
                 {scanMode === 'upload' ? (
-                    <ImageUploader onImageSelect={handleUploadPrediction} />
+                    // Cukup teruskan fungsi navigate ke ImageUploader
+                    <ImageUploader navigate={navigate} />
                 ) : (
                     <div className="relative w-full max-w-md mx-auto aspect-square rounded-lg overflow-hidden shadow-lg">
                         <CameraScanner ref={cameraRef} />

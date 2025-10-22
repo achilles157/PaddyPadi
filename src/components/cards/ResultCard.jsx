@@ -1,68 +1,69 @@
 import React from 'react';
-import { FileText, Redo2 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { saveReport } from '../../services/reportService'; // Impor fungsi baru
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeftIcon, SparklesIcon } from '@heroicons/react/24/solid';
 
-export const ResultCard = ({ image, result, onReset }) => {
-    
-    const handleSaveReport = () => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const { latitude, longitude } = position.coords;
-                        try {
-                            await saveReport(image, result, { latitude, longitude });
-                            resolve();
-                        } catch (error) {
-                            reject(error);
-                        }
-                    },
-                    async (error) => {
-                        console.warn("Gagal mendapatkan lokasi:", error.message);
-                        try {
-                            // Tetap simpan walau tanpa lokasi
-                            await saveReport(image, result, null);
-                            resolve();
-                        } catch (saveError) {
-                            reject(saveError);
-                        }
-                    }
-                );
-            }),
-            {
-                loading: 'Menyimpan laporan...',
-                success: <b>Laporan berhasil disimpan!</b>,
-                error: <b>Gagal menyimpan laporan.</b>,
-            }
-        );
-    };
+// Komponen ini sekarang menerima lebih banyak prop
+export const ResultCard = ({
+    imageSrc,
+    prediction,
+    confidence,
+    description,
+    treatment,
+    isExpertResult
+}) => {
+    const navigate = useNavigate();
+
+    // Langsung gunakan imageSrc karena sudah berupa URL yang valid
+    const imageUrl = imageSrc;
+
+    // Menentukan judul berdasarkan hasil
+    const title = isExpertResult ? "Hasil Analisis Ahli" : "Hasil Deteksi Awal";
+    const confidenceText = confidence ? `${confidence.toFixed(1)}%` : 'N/A';
+    const formattedPrediction = prediction.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
     return (
-        <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-xl p-6 flex flex-col gap-4">
-            <img src={URL.createObjectURL(image)} alt="Detected" className="rounded-xl object-cover w-full h-64" />
-            <div className="text-center">
-                <p className="text-sm text-gray-500">Penyakit Terdeteksi</p>
-                <h2 className="text-3xl font-bold text-sage">{result.class_name || result.name}</h2>
-                <p className="text-lg text-charcoal mt-1">
-                    Tingkat Keyakinan: <span className="font-bold">{result.confidence.toFixed(2)}%</span>
-                </p>
+        <div className="w-full max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="relative">
+                <img src={imageUrl} alt="Paddy Leaf" className="w-full h-64 object-cover" />
+                <button
+                    onClick={() => navigate('/scan')}
+                    className="absolute top-4 left-4 bg-white bg-opacity-70 rounded-full p-2 hover:bg-opacity-100 transition"
+                >
+                    <ArrowLeftIcon className="h-6 w-6 text-charcoal" />
+                </button>
             </div>
-            <div className="flex flex-col gap-3 mt-4">
-                <button
-                    onClick={handleSaveReport}
-                    className="w-full bg-sage text-white font-semibold py-3 px-4 rounded-xl hover:bg-green-800 transition-all flex items-center justify-center gap-2"
-                >
-                    <FileText className="h-5 w-5" />
-                    Simpan ke Laporan
-                </button>
-                <button
-                    onClick={onReset}
-                    className="w-full bg-gray-200 text-charcoal font-semibold py-3 px-4 rounded-xl hover:bg-gray-300 transition-all flex items-center justify-center gap-2"
-                >
-                    <Redo2 className="h-5 w-5" />
-                    Pindai Gambar Lain
-                </button>
+
+            <div className="p-6">
+                <div className="flex items-center gap-2">
+                    {isExpertResult && <SparklesIcon className="h-6 w-6 text-yellow-500" />}
+                    <h2 className="text-lg font-semibold text-gray-500">{title}</h2>
+                </div>
+                <h1 className="text-3xl font-bold text-charcoal mt-2">{formattedPrediction}</h1>
+                <p className="text-sage font-semibold">Tingkat Keyakinan: {confidenceText}</p>
+
+                {/* Tampilkan deskripsi dan perawatan jika ada (dari model ahli) */}
+                {description && (
+                    <div className='mt-4'>
+                        <h3 className='font-bold text-charcoal'>Deskripsi</h3>
+                        <p className="text-gray-600 mt-1">{description}</p>
+                    </div>
+                )}
+                {treatment && (
+                    <div className='mt-4'>
+                        <h3 className='font-bold text-charcoal'>Saran Penanganan</h3>
+                        <p className="text-gray-600 mt-1">{treatment}</p>
+                    </div>
+                )}
+
+                {/* Tombol untuk meminta analisis ahli jika hasil dari saringan */}
+                {!isExpertResult && (
+                    <div className="mt-6 pt-4 border-t">
+                        <p className='text-sm text-gray-500 mb-2'>Hasil ini adalah deteksi awal. Untuk diagnosis yang lebih akurat, minta analisis dari server ahli kami.</p>
+                        <button className="w-full bg-charcoal text-white font-bold py-3 px-4 rounded-xl hover:bg-gray-800 transition-all duration-300">
+                            Minta Analisis Ahli (Segera Hadir)
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

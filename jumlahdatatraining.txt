@@ -1,0 +1,10 @@
+bacterial_leaf_blight = 479
+bacterial_leaf_streak = 380
+bacterial_panicle_blight = 337
+blast = 1738
+brown_spot = 965
+dead_heart = 1442
+downy_mildew = 620
+hispa = 1594
+normal = 1764
+tungro = 1088

@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { UploadCloud, Image as ImageIcon, RotateCw } from 'lucide-react';
-import { Spinner } from './Spinner'; // Impor Spinner
+import { Spinner } from './Spinner';
+import { predictionService } from '../../services/predictionService'; // Impor service langsung
+import toast from 'react-hot-toast';
 
-// Terima prop 'onImageSelect' dari ScanPage
-export const ImageUploader = ({ onImageSelect }) => {
+// Komponen ini sekarang menerima 'navigate' sebagai prop
+export const ImageUploader = ({ navigate }) => {
     const [preview, setPreview] = useState(null);
-    const [isLoading, setIsLoading] = useState(false); // State loading internal
+    const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef(null);
     const imageRef = useRef(null);
 
@@ -21,10 +23,16 @@ export const ImageUploader = ({ onImageSelect }) => {
 
     const handleDetectClick = async () => {
         if (fileInputRef.current.files[0] && imageRef.current) {
-            setIsLoading(true); // Tampilkan loading
-            // Panggil fungsi prediksi dari parent (ScanPage)
-            await onImageSelect(preview, imageRef.current);
-            // Tidak perlu setIsLoading(false) karena akan ada navigasi halaman
+            setIsLoading(true);
+            try {
+                // Panggil service prediksi langsung dari sini
+                const screenerResult = await predictionService.runScreenerModel(imageRef.current);
+                // Langsung navigasi dari sini dengan membawa hasilnya
+                navigate('/result', { state: { imageSrc: preview, predictionResult: screenerResult } });
+            } catch (error) {
+                toast.error("Gagal melakukan prediksi. Coba lagi.");
+                setIsLoading(false); // Sembunyikan spinner jika terjadi error
+            }
         }
     };
 
@@ -32,13 +40,12 @@ export const ImageUploader = ({ onImageSelect }) => {
         fileInputRef.current.click();
     };
 
-    // Tampilan saat sedang loading/memprediksi
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center p-4 h-80">
+            <div className="w-full max-w-lg mx-auto flex flex-col items-center justify-center gap-6 p-4 h-96">
                 <Spinner />
-                <p className="mt-4 text-lg text-gray-600">Menganalisis gambar...</p>
-                {preview && <img src={preview} alt="Analyzing" className="w-24 h-24 object-contain rounded-lg mt-4" />}
+                <p className="mt-4 text-lg text-sage">Menganalisis gambar...</p>
+                <img src={preview} alt="Analyzing" className="w-32 h-32 object-contain rounded-lg mt-4" />
             </div>
         );
     }

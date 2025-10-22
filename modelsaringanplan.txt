@@ -1,9 +1,9 @@
-Tentu, ini adalah rencana aksi yang komprehensif untuk membuat model saringan **MobileNetV3** secara maksimal, yang dioptimalkan untuk kecepatan deteksi *real-time* di PWA Anda.
+Tentu, ini adalah rencana aksi yang komprehensif untuk membuat model saringan EfficientNetV2b3 uint8 secara maksimal, yang dioptimalkan untuk kecepatan deteksi *real-time* di PWA Anda.
 
 Kita akan menggunakan dataset dari Kaggle yang Anda berikan dan fokus pada teknik-teknik yang menghasilkan model yang ringan, cepat, namun tetap cukup akurat untuk tugas "menyaring". Seluruh rencana ini dirancang untuk dijalankan di **Google Colab**.
 
 ---
-### ### 🏆 Rencana Pembuatan Model Saringan (MobileNetV3)
+### ### 🏆 Rencana Pembuatan Model Saringan EfficientNetV2B3
 
 Tujuan utama kita adalah: **Kecepatan Inferensi Maksimal** dengan **Akurasi yang "Cukup Baik"**. Model ini tidak harus sempurna, tetapi harus bisa membedakan antara daun sehat dan daun yang kemungkinan berpenyakit dengan sangat cepat.
 
@@ -19,20 +19,20 @@ Langkah ini krusial untuk memastikan model belajar dari data yang berkualitas da
     * Membagi data menjadi set **Training (80%)** dan **Validation (20%)**. Kita tidak memerlukan set *testing* terpisah untuk model saringan ini, karena validasi akhir akan terjadi di aplikasi.
 
 3.  **Preprocessing & Augmentasi Data (Kunci Performa):**
-    * **Ukuran Gambar:** Kita akan menggunakan ukuran input yang lebih kecil, seperti **160x160** atau bahkan **128x128**. Ukuran yang lebih kecil secara dramatis meningkatkan kecepatan inferensi di *mobile*.
+    * **Ukuran Gambar:** Kita akan menggunakan ukuran input 256 256. 
     * **Augmentasi Agresif:** Karena model harus tangguh terhadap berbagai kondisi kamera *real-time*, kita akan menerapkan augmentasi yang kuat pada data training:
         * `RandomFlip`: Membalik gambar secara horizontal dan vertikal.
         * `RandomRotation`: Memutar gambar secara acak.
         * `RandomZoom`: Melakukan zoom acak.
         * `RandomContrast` & `RandomBrightness`: Mensimulasikan kondisi pencahayaan yang berbeda-beda di lapangan.
 
-#### **Fase 2: Pembangunan Model (Transfer Learning dengan MobileNetV3)**
+#### **Fase 2: Pembangunan Model (Transfer Learning dengan EfficientNetV2B3)
 
-Kita akan menggunakan *transfer learning* untuk memanfaatkan pengetahuan yang sudah dimiliki MobileNetV3.
+Kita akan menggunakan *transfer learning* untuk memanfaatkan pengetahuan yang sudah dimiliki EfficientNetV2B3
 
-1.  **Pilih Arsitektur:** Kita akan menggunakan **`MobileNetV3Small`**. Varian ini adalah yang paling ringan dan cepat, sangat cocok untuk tugas saringan.
+1.  **Pilih Arsitektur:** Kita akan menggunakan EfficientNetV2B3 uint8 Varian ini adalah yang paling ringan dan cepat, sangat cocok untuk tugas saringan.
 2.  **Membangun Model:**
-    * Muat `MobileNetV3Small` yang sudah dilatih pada ImageNet, tanpa lapisan klasifikasi teratas (`include_top=False`).
+    * Muat EfficientNetV2B3 yang sudah dilatih pada ImageNet, tanpa lapisan klasifikasi teratas (`include_top=False`).
     * **Bekukan (freeze)** seluruh lapisan dari *base model* ini. Kita ingin model ini tetap menjadi "pengekstrak fitur" yang cepat dan tidak mengubah pengetahuannya secara drastis.
     * Tambahkan "kepala" klasifikasi kustom di atasnya:
         * `GlobalAveragePooling2D()`: Untuk meratakan output fitur.
@@ -55,7 +55,7 @@ Ini adalah proses melatih model untuk mengenali penyakit padi.
     * **`ReduceLROnPlateau`:** Mengurangi *learning rate* secara otomatis ketika performa mulai stagnan. Ini membantu model menemukan titik optimal yang lebih baik di akhir pelatihan.
 
 4.  **Fine-Tuning (Opsional, tapi Direkomendasikan):**
-    * Setelah pelatihan awal, kita bisa "mencairkan" (unfreeze) beberapa lapisan terakhir dari `MobileNetV3Small` (misalnya, 15 lapisan terakhir).
+    * Setelah pelatihan awal, kita bisa "mencairkan" (unfreeze) beberapa lapisan terakhir dari EfficientNetV2B3(misalnya, 15 lapisan terakhir).
     * Lanjutkan training untuk beberapa epoch tambahan dengan *learning rate* yang **sangat kecil**. Ini memungkinkan model untuk sedikit menyesuaikan fitur-fitur yang sudah ada agar lebih relevan dengan gambar daun padi.
 
 #### **Fase 4: Evaluasi & Konversi**
@@ -70,4 +70,4 @@ Ini adalah proses melatih model untuk mengenali penyakit padi.
     * Gunakan `tensorflowjs_converter` untuk mengubah model Keras Anda menjadi format web.
     * **Terapkan Kuantisasi:** Selama konversi, gunakan opsi kuantisasi (misalnya, `quantization_bytes=1`). Ini akan memperkecil ukuran file model secara signifikan (seringkali 4x lebih kecil) dan mempercepat inferensi, yang merupakan **target utama** kita.
 
-Dengan mengikuti rencana ini, Anda akan menghasilkan sebuah model `MobileNetV3Small` yang sangat optimal: ringan, cepat, dan cukup akurat untuk menjadi "penjaga gerbang" yang efisien di PWA PaddyPadi Anda.
+Dengan mengikuti rencana ini, Anda akan menghasilkan sebuah model EfficientNetV2B3 terkuantisasi yang sangat optimal: ringan, cepat, dan cukup akurat untuk menjadi "penjaga gerbang" yang efisien di PWA PaddyPadi Anda.

@@ -1,4 +1,4 @@
-Berdasarkan tujuan Anda untuk deteksi *live-scan* dan penggunaan model **EfficientNetB0**, berikut adalah desain arsitektur dan pilihan *tech stack* yang paling optimal.
+Berdasarkan tujuan Anda untuk deteksi *live-scan* dan penggunaan model **EfficientNetV2B3**, berikut adalah desain arsitektur dan pilihan *tech stack* yang paling optimal.
 
 ---
 ### ### 1. Desain Arsitektur: *Hybrid Inference* (Pilihan Terbaik untuk Real-Time)
@@ -6,13 +6,13 @@ Berdasarkan tujuan Anda untuk deteksi *live-scan* dan penggunaan model **Efficie
 Untuk mencapai deteksi *real-time* tanpa membuat HP pengguna panas atau boros kuota, kita tidak bisa hanya mengandalkan server. Arsitektur terbaik adalah **Hybrid**, yang membagi tugas antara aplikasi (client) dan server.
 
 **Konsepnya:**
-1.  **Model Saringan Cepat (di Aplikasi/Client):** Sebuah versi **super ringan** dari model Anda akan berjalan langsung di browser menggunakan TensorFlow.js. Tugasnya bukan untuk mendiagnosis, tetapi hanya untuk menjawab pertanyaan: **"Apakah ada sesuatu yang mencurigakan di frame kamera ini?"** (Ya/Tidak). Ini berjalan terus-menerus dan terasa instan bagi pengguna.
-2.  **Model Ahli Akurat (di Server):** HANYA jika model saringan mendeteksi sesuatu yang mencurigakan, aplikasi akan mengambil satu gambar berkualitas tinggi dan mengirimkannya ke *backend*. Di sinilah model **EfficientNetB0** Anda yang besar dan akurat akan bekerja untuk memberikan diagnosis yang presisi.
+1.  **Model Saringan Cepat (di Aplikasi/Client):** Sebuah versi **super ringan** dari model Anda akan berjalan langsung di browser menggunakan TensorFlow.js yang terkuantisasi uint8 Tugasnya bukan untuk mendiagnosis, tetapi hanya untuk menjawab pertanyaan: **"Apakah ada sesuatu yang mencurigakan di frame kamera ini?"** (Ya/Tidak). Ini berjalan terus-menerus dan terasa instan bagi pengguna.
+2.  **Model Ahli Akurat (di Server):** HANYA jika model saringan mendeteksi sesuatu yang mencurigakan, aplikasi akan mengambil satu gambar berkualitas tinggi dan mengirimkannya ke *backend*. Di sinilah model **EfficientNetV2B3** Anda yang besar dan akurat akan bekerja untuk memberikan diagnosis yang presisi.
 
 **Keuntungannya:**
 * **Performa Real-Time:** Pengguna mendapatkan umpan balik visual instan dari model saringan di HP mereka.
 * **Mengurangi Beban Jaringan & Server:** Anda tidak mengirim *streaming video* ke server, melainkan hanya satu gambar saat dibutuhkan. Ini menghemat biaya server dan kuota pengguna.
-* **Akurasi Maksimal:** Diagnosis akhir tetap berasal dari model terbaik Anda (EfficientNetB0) yang berjalan di lingkungan server yang kuat (dengan GPU).
+* **Akurasi Maksimal:** Diagnosis akhir tetap berasal dari model terbaik Anda (EfficientNetV2B3) yang berjalan di lingkungan server yang kuat (dengan GPU).
 
 ---
 ### ### 2. Strategi Model: Dua Format untuk Dua Tugas
