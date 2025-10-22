@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
-const MODEL_URL = '/paddy_tfjs_model_final/model.json';
+const MODEL_URL = '/models/model.json';
 const CLASS_NAMES = ['bacterial_leaf_blight', 'bacterial_leaf_streak', 'bacterial_panicle_blight', 'blast', 'brown_spot', 'dead_heart', 'downy_mildew', 'hispa', 'normal', 'tungro'];
 
 let model = null;
