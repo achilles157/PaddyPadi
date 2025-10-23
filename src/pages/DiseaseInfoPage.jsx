@@ -107,7 +107,7 @@ const DiseaseInfoPage = () => {
             {/* Render Modal Form */}
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40" // z-index lebih rendah dari form
+                    className="fixed inset-0 bg-black opacity-50 z-40" // z-index lebih rendah dari form
                     onClick={handleCloseModal} // Menutup modal jika backdrop diklik
                 ></div>
             )}

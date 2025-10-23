@@ -110,7 +110,7 @@ export const predictExpert = async (imageFile) => {
   console.log('Sending image to expert server model (FastAPI):', imageFile.name);
 
   // TODO: Ganti URL ini dengan URL API FastAPI Anda
-  const YOUR_BACKEND_EXPERT_MODEL_URL = 'http://localhost:8000/predict'; // Contoh URL
+  const YOUR_BACKEND_EXPERT_MODEL_URL = 'https://v86dl3mm-8000.asse.devtunnels.ms/predict'; // Contoh URL
 
   const formData = new FormData();
   formData.append('image', imageFile); // Pastikan key 'file' sesuai dengan kebutuhan FastAPI Anda
