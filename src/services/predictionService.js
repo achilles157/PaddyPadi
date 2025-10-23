@@ -113,7 +113,7 @@ export const predictExpert = async (imageFile) => {
   const YOUR_BACKEND_EXPERT_MODEL_URL = 'http://localhost:8000/predict'; // Contoh URL
 
   const formData = new FormData();
-  formData.append('file', imageFile); // Pastikan key 'file' sesuai dengan kebutuhan FastAPI Anda
+  formData.append('image', imageFile); // Pastikan key 'file' sesuai dengan kebutuhan FastAPI Anda
 
   try {
      const response = await fetch(YOUR_BACKEND_EXPERT_MODEL_URL, {

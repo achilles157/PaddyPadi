@@ -13,9 +13,9 @@ const ResultPage = () => {
 
   // (Point 5) useEffect untuk fetch data penyakit berdasarkan hasil prediksi
   useEffect(() => {
-    if (prediction && prediction.label) {
-      // Jika label 'normal', tidak perlu fetch ke Firestore
-      if (prediction.label === 'normal') {
+  // Gunakan prediction.prediction di dalam useEffect ini
+    if (prediction && prediction.class_name) { // <-- Cek .prediction
+      if (prediction.prediction === 'normal') { // <-- Cek .prediction
         setDiseaseData({
           name: 'Padi Sehat (Normal)',
           description: 'Tanaman padi Anda dalam kondisi sehat.',
@@ -23,16 +23,16 @@ const ResultPage = () => {
         });
         setLoading(false);
       } else {
-        // Fetch data penyakit dari Firestore
         const fetchDiseaseData = async () => {
           setLoading(true);
           try {
-            const data = await getDiseaseById(prediction.label);
+            // Gunakan .prediction untuk mengambil data dari Firestore
+            const data = await getDiseaseById(prediction.class_name); // <-- Ganti di sini
             if (data) {
               setDiseaseData(data);
             } else {
-              console.error('No disease data found for label:', prediction.label);
-              setDiseaseData(null); // Set null jika data tidak ditemukan
+              console.error('No disease data found for label:', prediction.prediction); // Log .prediction
+              setDiseaseData(null);
             }
           } catch (error) {
             console.error('Error fetching disease data:', error);
@@ -40,14 +40,12 @@ const ResultPage = () => {
             setLoading(false);
           }
         };
-        
         fetchDiseaseData();
       }
     } else {
-      // Tidak ada prediksi, berhenti loading
       setLoading(false);
     }
-  }, [prediction]); // Dependensi pada objek prediction
+  }, [prediction]);
 
   if (!prediction || !imageSrc) {
     return (
@@ -82,10 +80,15 @@ const ResultPage = () => {
         <div className="p-6 text-center">
           <h1 className="text-3xl font-bold text-gray-900 capitalize">
             {/* Ganti underscore dengan spasi untuk tampilan */}
-            {prediction.label.replace(/_/g, ' ')}
+            {prediction && prediction.class_name ? prediction.class_name.replace(/_/g, ' ') : 'Memuat...'}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Confidence: <span className="font-bold">{(prediction.confidence * 100).toFixed(2)}%</span>
+            {/* Tambahkan pengecekan serupa untuk confidence jika perlu */}
+            Confidence: <span className="font-bold">
+              {prediction && typeof prediction.confidence === 'number'
+                ? `${(prediction.confidence * 100).toFixed(2)}%`
+                : 'N/A'}
+            </span>
           </p>
           
           {/* (Point 6) Tampilkan model mana yang digunakan */}
