@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './contexts/AuthContext';
 
 import { MainLayout } from './components/layout/MainLayout';
-import ScanPage from './pages/ScanPage';
-import ReportPage from './pages/ReportPage';
-import DiseaseInfoPage from './pages/DiseaseInfoPage';
-import ProfilePage from './pages/ProfilePage';
-import ResultPage from './pages/ResultPage';
-import DiseaseDetailPage from './pages/DiseaseDetailPage';
 import AuthPage from './pages/AuthPage';
+import ScanPage from './pages/ScanPage';
+import ResultPage from './pages/ResultPage';
+import DiseaseInfoPage from './pages/DiseaseInfoPage';
+import DiseaseDetailPage from './pages/DiseaseDetailPage'; // <-- 1. Impor komponen
+import ReportPage from './pages/ReportPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Komponen untuk melindungi rute
 const ProtectedRoute = ({ children }) => {
@@ -36,7 +36,7 @@ function App() {
                     <Route path="scan" element={<ScanPage />} />
                     <Route path="reports" element={<ReportPage />} />
                     <Route path="diseases" element={<DiseaseInfoPage />} />
-                    <Route path="diseases/:id" element={<DiseaseDetailPage />} />
+                    <Route path="/disease/:diseaseId" element={<DiseaseDetailPage />} />
                     <Route path="profile" element={<ProfilePage />} />
                 </Route>
 

@@ -103,25 +103,41 @@ const ResultPage = () => {
               <p className="text-gray-500">Memuat detail penyakit...</p>
             </div>
           ) : diseaseData ? (
-            <div className="mt-6 pt-4 border-t border-gray-200 text-left">
-              {/* Asumsi field di Firestore adalah: name, description, treatment */}
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">{diseaseData.name}</h2>
-              
-              {diseaseData.description && (
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-700">Deskripsi</h3>
-                  <p className="text-gray-600 whitespace-pre-line">{diseaseData.description}</p>
-                </div>
-              )}
-              
-              {diseaseData.treatment && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700">Rekomendasi Penanganan</h3>
-                  <p className="text-gray-600 whitespace-pre-line">{diseaseData.treatment}</p>
-                </div>
-              )}
-            </div>
-          ) : (
+              <div className="mt-6 pt-4 border-t border-gray-200 text-left">
+                {/* Gunakan 'nama' dari Firestore */}
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{diseaseData.nama}</h2>
+
+                {/* Gunakan 'penjelasan' dari Firestore */}
+                {diseaseData.penjelasan && (
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700">Deskripsi</h3>
+                    <p className="text-gray-600 whitespace-pre-line">{diseaseData.penjelasan}</p>
+                  </div>
+                )}
+
+                {diseaseData.penyebab && (
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700">Kemungkinan Penyebab</h3>
+                    <p className="text-gray-600 whitespace-pre-line">{diseaseData.penyebab}</p>
+                  </div>
+                )}
+
+                {/* Gunakan 'penanggulangan_cepat' dari Firestore (asumsi ini array) */}
+                {diseaseData.penanggulangan_cepat && Array.isArray(diseaseData.penanggulangan_cepat) && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700">Rekomendasi Penanganan</h3>
+                    {/* Render sebagai daftar jika array */}
+                    <ul className="list-disc list-inside text-gray-600">
+                      {diseaseData.penanggulangan_cepat.map((step, index) => (
+                        <li key={index}>{step}</li>
+                      ))}
+                    </ul>
+                    {/* Jika bukan array, tampilkan langsung */}
+                    {/* <p className="text-gray-600 whitespace-pre-line">{diseaseData.penanggulangan_cepat}</p> */}
+                  </div>
+                )}
+              </div>
+            ) : (
             // Tampil jika loading selesai tapi data tidak ada (dan bukan 'normal')
             prediction.label !== 'normal' && (
               <p className="mt-6 text-red-500">Detail untuk penyakit ini tidak ditemukan di database.</p>
