@@ -1,96 +1,110 @@
-import React, { useRef, useState } from 'react';
-import { UploadCloud, Image as ImageIcon, RotateCw } from 'lucide-react';
+// src/components/common/ImageUploader.jsx
+
+import React, { useState } from 'react';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import { Spinner } from './Spinner';
-import { predictionService } from '../../services/predictionService'; // Impor service langsung
-import toast from 'react-hot-toast';
 
-// Komponen ini sekarang menerima 'navigate' sebagai prop
-export const ImageUploader = ({ navigate }) => {
-    const [preview, setPreview] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const fileInputRef = useRef(null);
-    const imageRef = useRef(null);
+// HAPUS: Import 'predictionService', 'toast', dll. (Logika dipindah ke ScanPage)
 
-    const handleFileChange = (e) => {
+// Ganti props dari { navigate } menjadi props baru dari ScanPage
+export default function ImageUploader({ onImageUpload, preview, loading }) {
+    
+    // State untuk styling drag-and-drop
+    const [isDragging, setIsDragging] = useState(false);
+
+    // Fungsi ini sekarang hanya meneruskan file ke ScanPage
+    const handleFileChange = (selectedFile) => {
+        if (selectedFile) {
+            // Panggil fungsi 'handleUploadPredict' yang ada di ScanPage
+            onImageUpload(selectedFile);
+        }
+    };
+
+    // Handler untuk input file klik
+    const onFileInputChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            if (preview) {
-                URL.revokeObjectURL(preview);
-            }
-            setPreview(URL.createObjectURL(file));
+            handleFileChange(file);
         }
     };
 
-    const handleDetectClick = async () => {
-        if (fileInputRef.current.files[0] && imageRef.current) {
-            setIsLoading(true);
-            try {
-                // Panggil service prediksi langsung dari sini
-                const screenerResult = await predictionService.runScreenerModel(imageRef.current);
-                // Langsung navigasi dari sini dengan membawa hasilnya
-                navigate('/result', { state: { imageSrc: preview, predictionResult: screenerResult } });
-            } catch (error) {
-                toast.error("Gagal melakukan prediksi. Coba lagi.");
-                setIsLoading(false); // Sembunyikan spinner jika terjadi error
-            }
+    // Handler untuk styling drag-and-drop
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            handleFileChange(file);
         }
     };
 
-    const triggerFileSelect = () => {
-        fileInputRef.current.click();
-    };
-
-    if (isLoading) {
-        return (
-            <div className="w-full max-w-lg mx-auto flex flex-col items-center justify-center gap-6 p-4 h-96">
-                <Spinner />
-                <p className="mt-4 text-lg text-sage">Menganalisis gambar...</p>
-                <img src={preview} alt="Analyzing" className="w-32 h-32 object-contain rounded-lg mt-4" />
-            </div>
-        );
-    }
+    // HAPUS: State internal 'file', 'preview', dan 'isLoading'
+    // HAPUS: Fungsi 'handleUpload'
 
     return (
-        <div className="w-full max-w-lg mx-auto flex flex-col items-center gap-6 p-4">
+        // (Styling Asli) Container utama
+        <div className="w-full max-w-md mx-auto">
             <div
-                className="w-full h-64 border-2 border-dashed border-sage rounded-xl flex items-center justify-center bg-green-50 cursor-pointer"
-                onClick={triggerFileSelect}
+                // (Styling Asli) Area Dropzone
+                className={`relative w-full aspect-square rounded-lg border-2 border-dashed ${
+                    isDragging ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                } flex items-center justify-center text-center p-4 transition-all duration-300`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
             >
-                {preview ? (
-                    <img ref={imageRef} src={preview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
+                {/* Gunakan prop 'loading' dari ScanPage */}
+                {loading ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-75 rounded-lg">
+                        <Spinner />
+                        {/* Pesan loading dipindahkan ke ScanPage overlay */}
+                    </div>
+                ) : preview ? ( // Gunakan prop 'preview' dari ScanPage
+                    <img 
+                        src={preview} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain rounded-lg" 
+                    />
                 ) : (
-                    <div className="text-center text-sage">
-                        <UploadCloud className="mx-auto h-12 w-12" />
-                        <p className="mt-2 font-semibold">Klik untuk memilih gambar</p>
-                        <p className="text-xs">PNG, JPG, atau WEBP</p>
+                    // (Styling Asli) Tampilan placeholder
+                    <div className="text-gray-500">
+                        <ArrowUpTrayIcon className="w-12 h-12 text-gray-400 mx-auto" />
+                        <p className="mt-2">
+                            Drag & drop atau{' '}
+                            <label 
+                                htmlFor="file-upload-input" 
+                                className="font-semibold text-green-600 cursor-pointer hover:underline"
+                            >
+                                klik untuk unggah
+                            </label>
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">Gunakan model ahli untuk akurasi terbaik</p>
                     </div>
                 )}
+                
+                {/* Input file tersembunyi */}
+                <input 
+                    id="file-upload-input" 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={onFileInputChange}
+                    disabled={loading}
+                />
             </div>
-            <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-            />
-            {preview && (
-                <div className="w-full flex flex-col sm:flex-row gap-4">
-                    <button
-                        onClick={triggerFileSelect}
-                        className="w-full bg-gray-200 text-charcoal font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-gray-300 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                        <RotateCw className="h-5 w-5" />
-                        Ganti Gambar
-                    </button>
-                    <button
-                        onClick={handleDetectClick}
-                        className="w-full bg-accent text-charcoal font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-yellow-500 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                        <ImageIcon className="h-5 w-5" />
-                        Deteksi Penyakit
-                    </button>
-                </div>
-            )}
+            
+            {/* HAPUS: Tombol "Mulai Prediksi". 
+                (Prediksi sekarang dimulai otomatis oleh ScanPage saat gambar dipilih) */}
         </div>
     );
 };
