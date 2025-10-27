@@ -63,7 +63,7 @@ const ReportPage = () => {
   // --- Render Kondisional Awal ---
   // Tampilkan spinner jika AuthContext masih loading status autentikasi
   if (authLoading || pageLoading) {
-    return <Loader message={authLoading ? "Checking authentication..." : "Loading reports..."} />;
+    return <Spinner message={authLoading ? "Checking authentication..." : "Loading reports..."} />;
   }
 
   // 2. Tampilkan error jika ada
