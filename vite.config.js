@@ -18,15 +18,21 @@ export default defineConfig({
         theme_color: '#8A9A5B', // Warna sage kita
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'paddypadi.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'paddypadi.png',
             sizes: '512x512',
             type: 'image/png'
           }
+        ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3000000,
+        globIgnores: [
+          'models/**'
         ]
       }
     })

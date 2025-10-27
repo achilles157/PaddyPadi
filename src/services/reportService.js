@@ -1,56 +1,106 @@
 // src/services/reportService.js
-import { db, storage, auth } from './firebase';
-import { query, where, getDocs, orderBy } from 'firebase/firestore';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
+import { db } from './firebase'; // Pastikan path ini benar ke inisialisasi Firebase Anda
+import { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  query, 
+  orderBy, 
+  limit, 
+  doc, 
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  where // Tambahkan 'where' untuk query spesifik user
+} from 'firebase/firestore';
 
-/**
- * Mengunggah gambar ke Firebase Storage dan menyimpan data laporan ke Firestore.
- * @param {File} imageFile - File gambar yang akan diunggah.
- * @param {object} predictionData - Data hasil prediksi dari model.
- * @param {object} location - Data geolokasi { latitude, longitude }.
- */
-export const saveReport = async (imageFile, predictionData, location) => {
-    if (!auth.currentUser) throw new Error("Pengguna belum login.");
+const reportsCollectionRef = collection(db, 'reports');
 
-    // 1. Buat path unik untuk gambar di Storage
-    const imageRef = ref(storage, `reports/${auth.currentUser.uid}/${uuidv4()}`);
-
-    // 2. Unggah gambar
-    const uploadResult = await uploadBytes(imageRef, imageFile);
-    const imageUrl = await getDownloadURL(uploadResult.ref);
-
-    // 3. Siapkan data untuk disimpan di Firestore
-    const reportData = {
-        userId: auth.currentUser.uid,
-        imageUrl: imageUrl,
-        diseaseName: predictionData.class_name || predictionData.name,
-        confidence: predictionData.confidence,
-        location: location || null,
-        timestamp: serverTimestamp(), // Gunakan timestamp server
-    };
-
-    // 4. Simpan dokumen ke koleksi 'reports'
-    const docRef = await addDoc(collection(db, "reports"), reportData);
-    
-    console.log("Laporan berhasil disimpan dengan ID:", docRef.id);
-    return { id: docRef.id, ...reportData };
+// Fungsi untuk mendapatkan semua laporan (atau laporan spesifik user)
+export const getReports = async (userId = null) => {
+  try {
+    let q;
+    if (userId) {
+      // Jika userId diberikan, ambil laporan hanya untuk user tersebut
+      q = query(reportsCollectionRef, where('userId', '==', userId), orderBy('timestamp', 'desc'));
+    } else {
+      // Jika userId tidak diberikan, ambil semua laporan (mungkin hanya untuk admin/testing)
+      q = query(reportsCollectionRef, orderBy('timestamp', 'desc'));
+    }
+    const data = await getDocs(q);
+    return data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  } catch (error) {
+    console.error("Error fetching reports: ", error);
+    throw error;
+  }
 };
 
-export const getReports = async () => {
-    if (!auth.currentUser) throw new Error("Pengguna belum login.");
-    
-    const reportsCol = collection(db, 'reports');
-    // Query untuk mengambil laporan milik user, diurutkan dari yang terbaru
-    const q = query(
-        reportsCol, 
-        where("userId", "==", auth.currentUser.uid), 
-        orderBy("timestamp", "desc")
-    );
+// Fungsi untuk mendapatkan laporan berdasarkan ID
+export const getReportById = async (reportId) => {
+  try {
+    const reportDocRef = doc(db, 'reports', reportId);
+    const reportDoc = await getDoc(reportDocRef);
+    if (reportDoc.exists()) {
+      return { ...reportDoc.data(), id: reportDoc.id };
+    } else {
+      console.log("No such report document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching report by ID: ", error);
+    throw error;
+  }
+};
 
-    const reportSnapshot = await getDocs(q);
-    const reportList = reportSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    return reportList;
+// Fungsi untuk menambahkan laporan baru
+export const addReport = async (reportData) => {
+  try {
+    // reportData harus menyertakan userId, imageURL, prediction, timestamp, dll.
+    const newReportRef = await addDoc(reportsCollectionRef, reportData);
+    return newReportRef.id;
+  } catch (error) {
+    console.error("Error adding report: ", error);
+    throw error;
+  }
+};
+
+// Fungsi untuk memperbarui laporan
+export const updateReport = async (reportId, updatedData) => {
+  try {
+    const reportDocRef = doc(db, 'reports', reportId);
+    await updateDoc(reportDocRef, updatedData);
+    console.log("Report updated successfully!");
+  } catch (error) {
+    console.error("Error updating report: ", error);
+    throw error;
+  }
+};
+
+// Fungsi untuk menghapus laporan
+export const deleteReport = async (reportId) => {
+  try {
+    const reportDocRef = doc(db, 'reports', reportId);
+    await deleteDoc(reportDocRef);
+    console.log("Report deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting report: ", error);
+    throw error;
+  }
+};
+
+// Fungsi untuk mendapatkan laporan terbaru (misalnya 5 laporan terakhir)
+export const getLatestReports = async (count = 5, userId = null) => {
+  try {
+    let q;
+    if (userId) {
+      q = query(reportsCollectionRef, where('userId', '==', userId), orderBy('timestamp', 'desc'), limit(count));
+    } else {
+      q = query(reportsCollectionRef, orderBy('timestamp', 'desc'), limit(count));
+    }
+    const data = await getDocs(q);
+    return data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  } catch (error) {
+    console.error("Error fetching latest reports: ", error);
+    throw error;
+  }
 };

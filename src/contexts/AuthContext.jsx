@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const register = async (email, password) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -42,6 +43,8 @@ export const AuthProvider = ({ children }) => {
             }
             setLoading(false);
         });
+            setIsAuthenticated(!!user); 
+            setLoading(false);
         return () => unsubscribe();
     }, []);
 

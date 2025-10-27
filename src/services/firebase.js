@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";
 
 // TODO: Ganti dengan konfigurasi dari Firebase Console Anda
 const firebaseConfig = {
@@ -16,6 +17,7 @@ const firebaseConfig = {
 
 // Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Ekspor layanan yang akan kita gunakan di seluruh aplikasi
 export const auth = getAuth(app);

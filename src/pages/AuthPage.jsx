@@ -29,7 +29,7 @@ const AuthForm = ({ isLogin, onSubmit }) => {
                 className="w-full px-4 py-3 rounded-lg bg-gray-100 border focus:border-sage focus:bg-white focus:outline-none"
                 required 
             />
-            <button type="submit" className="w-full bg-sage text-white font-bold py-3 px-4 rounded-lg hover:bg-green-800 transition-all">
+            <button type="submit" className="w-full bg-sage text-green-500 font-bold py-3 px-4 rounded-lg hover:bg-green-800 transition-all">
                 {isLogin ? 'Login' : 'Daftar'}
             </button>
         </form>
