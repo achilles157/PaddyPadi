@@ -7,7 +7,6 @@ import { Spinner } from '../components/common/Spinner';
 import { CameraIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 
-// Fungsi helper untuk format persentase
 const formatPercent = (val) => `${(val * 100).toFixed(1)}%`;
 
 export default function ScanPage() {
@@ -15,16 +14,14 @@ export default function ScanPage() {
     const [scanMode, setScanMode] = useState('upload'); 
     const [loading, setLoading] = useState(false); 
     const [preview, setPreview] = useState(null); 
-    // State untuk hasil live scan
     const [liveResult, setLiveResult] = useState({ label: 'Mengarahkan...', confidence: 0 });
-    const [lastPrediction, setLastPrediction] = useState(null); // Menyimpan prediksi terakhir
+    const [lastPrediction, setLastPrediction] = useState(null); 
     
     const navigate = useNavigate();
     const cameraRef = useRef(null); 
     const requestRef = useRef(); 
     const isDetecting = useRef(false); 
 
-    // Muat model saringan (TF.js) saat halaman dibuka
     useEffect(() => {
         loadModel()
             .then(() => {
@@ -37,7 +34,7 @@ export default function ScanPage() {
             });
     }, []);
 
-    // Logika Live Scan Loop deteksi menggunakan requestAnimationFrame
+    // Live Scan Loop deteksi menggunakan requestAnimationFrame
     const detectionLoop = useCallback(async () => {
         if (isDetecting.current && modelStatus === 'ready' && cameraRef.current?.videoElement) {
             const video = cameraRef.current.videoElement;
@@ -60,39 +57,33 @@ export default function ScanPage() {
         } else {
             isDetecting.current = false;
             cancelAnimationFrame(requestRef.current);
-            setLiveResult({ label: 'Mengarahkan...', confidence: 0 }); // Reset label
+            setLiveResult({ label: 'Mengarahkan...', confidence: 0 }); 
         }
-        // Cleanup saat unmount
         return () => {
             isDetecting.current = false;
             cancelAnimationFrame(requestRef.current);
         };
-    }, [scanMode, modelStatus, detectionLoop]); // Kontrol loop saat mode berubah
+    }, [scanMode, modelStatus, detectionLoop]); 
 
-    // Handler untuk tombol capture kamera
     const handleCameraCapture = () => {
         if (!cameraRef.current || !lastPrediction) {
             toast.error("Kamera atau prediksi belum siap.");
             return;
         }
         
-        isDetecting.current = false; // Hentikan loop
-        const imageSrc = cameraRef.current.takePicture(); // Ambil gambar
+        isDetecting.current = false; 
+        const imageSrc = cameraRef.current.takePicture(); 
         
         if (!imageSrc) {
             toast.error("Gagal mengambil gambar.");
-            isDetecting.current = true; // Mulai lagi loop jika gagal
+            isDetecting.current = true; 
             return;
         }
-
-        // Kirim hasil saringan (TF.js) dan gambar ke ResultPage
-        // ResultPage akan menampilkan info ini DAN opsi "Prediksi Lebih Lanjut"
         navigate('/result', {
             state: { prediction: lastPrediction, imageSrc: imageSrc },
         });
     };
     
-    // Handler untuk upload gambar (langsung ke Model Ahli)
     const handleUploadPredict = async (imageFile) => {
         if (!imageFile) return;
 
@@ -101,7 +92,7 @@ export default function ScanPage() {
         setPreview(imageSrc); 
 
         try {
-            const result = await predictExpert(imageFile); // Panggil model server
+            const result = await predictExpert(imageFile); 
             setLoading(false);
             
             navigate('/result', {
@@ -114,7 +105,6 @@ export default function ScanPage() {
         }
     };
 
-    // Tampilan loading saat model TF.js sedang disiapkan
     if (modelStatus === 'loading') {
         return (
             <div className="flex justify-center items-center h-[80vh]">
@@ -123,8 +113,6 @@ export default function ScanPage() {
             </div>
         );
     }
-    
-    // Tampilan error jika model gagal dimuat
     if (modelStatus === 'error') {
          return (
             <div className="flex flex-col justify-center items-center h-[80vh] text-center p-4">
@@ -176,8 +164,6 @@ export default function ScanPage() {
                 ) : (
                     <div className="relative w-full max-w-md mx-auto aspect-square rounded-lg overflow-hidden shadow-lg">
                         <CameraScanner ref={cameraRef} />
-                        
-                        {/* Overlay untuk hasil live */}
                         <div className="absolute top-2 left-2 right-2 p-2 bg-black bg-opacity-50 rounded-lg text-white text-center">
                             <span className="font-semibold capitalize">
                                 {liveResult.label.replace(/_/g, ' ')}:

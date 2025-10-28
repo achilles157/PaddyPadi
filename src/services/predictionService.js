@@ -1,10 +1,9 @@
 import * as tf from '@tensorflow/tfjs';
 
 let model;
-const MODEL_URL = '/models/model.json'; // Model saringan TF.js Anda
-const IMAGE_SIZE = 256; // Sesuai permintaan
+const MODEL_URL = '/models/model.json'; 
+const IMAGE_SIZE = 256; 
 
-// Daftar kelas sesuai modelsaringanplan.txt
 const CLASSES = [
   'bacterial_leaf_blight',
   'bacterial_leaf_streak',
@@ -23,11 +22,9 @@ export const loadModel = async () => {
     if (!model) {
       console.log('Loading graph model (float16 quantized)...'); 
 
-      // Gunakan loadGraphModel
       model = await tf.loadGraphModel(MODEL_URL);
       console.log('Model loaded successfully.');
 
-      // Warm-up graph model
       tf.tidy(() => {
         const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
         model.execute({ 'keras_tensor_25787': dummyTensor }); 
@@ -63,7 +60,6 @@ export const predict = async (imageElement) => {
     const outputTensor = Array.isArray(resultTensor) ? resultTensor[0] : resultTensor;
     const predictionData = outputTensor.dataSync();
 
-    // Clean up tensors
     tensor.dispose();
     if (Array.isArray(resultTensor)) {
         resultTensor.forEach(t => t.dispose());
@@ -80,16 +76,15 @@ export const predict = async (imageElement) => {
     const label = CLASSES[maxIndex];
     const confidence = maxConfidence;
 
-    return { label, confidence, model: 'saringan-tfjs (graph-float16)' }; // Update nama model
+    return { label, confidence, model: 'saringan-tfjs (graph-float16)' }; 
 
   } catch (error) {
       console.error("Error during graph model prediction:", error);
-      tensor.dispose(); // Pastikan tensor dibersihkan jika ada error
+      tensor.dispose(); 
       return null;
   }
 };
 
-// Fungsi untuk model ahli di server (FastAPI)
 export const predictExpert = async (imageFile) => {
   console.log('Sending image to expert server model (FastAPI):', imageFile.name);
 
@@ -108,7 +103,6 @@ export const predictExpert = async (imageFile) => {
        throw new Error(`Server error: ${response.statusText}`);
      }
      const result = await response.json();
-     // Asumsi server mengembalikan { label, confidence }
      return { ...result, model: 'expert-server (keras)' }; 
   } catch (error) {
      console.error('Error during expert prediction:', error);

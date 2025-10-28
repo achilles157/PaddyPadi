@@ -8,10 +8,8 @@ import {
 } from "firebase/auth";
 import { createUserProfileDocument } from '../services/userService';
 
-// Definisikan Context di luar komponen
 const AuthContext = createContext(null);
 
-// Buat Provider untuk "membungkus" aplikasi
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

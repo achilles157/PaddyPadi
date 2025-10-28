@@ -13,7 +13,6 @@ const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ReportDetailPage = lazy (() => import('./pages/ReportDetailPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
-// Komponen untuk melindungi rute
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth(); 
 

@@ -1,5 +1,4 @@
-// src/services/firestoreService.js
-import { db } from './firebase'; // Pastikan Anda mengimpor 'db' dari firebase.js
+import { db } from './firebase'; 
 import { 
   collection, 
   addDoc, 
@@ -28,19 +27,18 @@ export const addReport = async (reportData) => {
   }
 };
 
-// Fungsi untuk mengambil semua laporan berdasarkan userId
 export const getReportsByUserId = async (userId) => {
   try {
     const q = query(
       collection(db, REPORTS_COLLECTION),
       where("userId", "==", userId),
-      orderBy("createdAt", "desc") // Urutkan dari yang terbaru
+      orderBy("createdAt", "desc") 
     );
     const querySnapshot = await getDocs(q);
     const reports = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate() // Konversi Firestore Timestamp ke Date object
+      createdAt: doc.data().createdAt?.toDate() 
     }));
     return reports;
   } catch (e) {
