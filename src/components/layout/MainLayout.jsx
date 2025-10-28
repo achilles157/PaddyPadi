@@ -4,10 +4,9 @@ import { Toaster } from 'react-hot-toast';
 
 export const MainLayout = () => {
     return (
-        <div className="bg-off-white min-h-screen w-full pb-24"> {/* Padding bawah untuk ruang nav */}
+        <div className="bg-off-white min-h-screen w-full pb-24">
             <Toaster position="top-center" />
             <main className="p-4">
-                {/* Outlet akan merender halaman yang aktif sesuai URL */}
                 <Outlet />
             </main>
             <BottomNav />

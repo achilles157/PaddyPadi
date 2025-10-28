@@ -1,11 +1,9 @@
-// src/services/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 
-// TODO: Ganti dengan konfigurasi dari Firebase Console Anda
 const firebaseConfig = {
   apiKey: "AIzaSyBkrL9uPp_d0QoFMT-r-lcHXtOrKjFKZyU",
   authDomain: "paddypadi.firebaseapp.com",

@@ -1,5 +1,3 @@
-// src/components/common/AddEditDiseaseForm.jsx
-
 import React, { useState, useEffect } from 'react';
 
 // Props:
@@ -13,7 +11,7 @@ const AddEditDiseaseForm = ({ initialData, onSubmit, onCancel }) => {
     const [nama, setNama] = useState('');
     const [penjelasan, setPenjelasan] = useState('');
     const [penyebab, setPenyebab] = useState('');
-    const [penanggulangan, setPenanggulangan] = useState(''); // String dipisah baris baru
+    const [penanggulangan, setPenanggulangan] = useState(''); 
 
     const isEditMode = Boolean(initialData);
 
@@ -24,7 +22,6 @@ const AddEditDiseaseForm = ({ initialData, onSubmit, onCancel }) => {
             setNama(initialData.nama || '');
             setPenjelasan(initialData.penjelasan || '');
             setPenyebab(initialData.penyebab || '');
-            // Gabungkan array penanggulangan menjadi string dipisah baris baru
             setPenanggulangan(Array.isArray(initialData.penanggulangan_cepat)
                 ? initialData.penanggulangan_cepat.join('\n')
                 : '');
@@ -48,8 +45,6 @@ const AddEditDiseaseForm = ({ initialData, onSubmit, onCancel }) => {
              alert("Nama Penyakit wajib diisi!");
              return;
          }
-
-        // Ubah string penanggulangan menjadi array
         const penanggulanganArray = penanggulangan.split('\n').map(s => s.trim()).filter(s => s);
 
         const formData = {
@@ -58,15 +53,12 @@ const AddEditDiseaseForm = ({ initialData, onSubmit, onCancel }) => {
             penyebab: penyebab.trim(),
             penanggulangan_cepat: penanggulanganArray,
         };
-
-        // Panggil fungsi onSubmit dari parent dengan ID dan data
-        onSubmit(diseaseId.trim().toLowerCase(), formData); // ID selalu lowercase
+        onSubmit(diseaseId.trim().toLowerCase(), formData);
     };
 
     return (
-        // Styling Modal sederhana (bisa diganti dengan library modal)
+        // Styling Modal sederhana 
         <div className="fixed inset-0 flex justify-center items-center z-50 p-4 bg-transparent">
-        {/* Kartu form putih */}
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4">
                     {isEditMode ? 'Edit Info Penyakit' : 'Tambah Penyakit Baru'}

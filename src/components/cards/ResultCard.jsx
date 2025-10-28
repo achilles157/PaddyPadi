@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, SparklesIcon } from '@heroicons/react/24/solid';
 
-// Komponen ini sekarang menerima lebih banyak prop
 export const ResultCard = ({
     imageSrc,
     prediction,
@@ -40,8 +39,6 @@ export const ResultCard = ({
                 </div>
                 <h1 className="text-3xl font-bold text-charcoal mt-2">{formattedPrediction}</h1>
                 <p className="text-sage font-semibold">Tingkat Keyakinan: {confidenceText}</p>
-
-                {/* Tampilkan deskripsi dan perawatan jika ada (dari model ahli) */}
                 {description && (
                     <div className='mt-4'>
                         <h3 className='font-bold text-charcoal'>Deskripsi</h3>
@@ -54,8 +51,6 @@ export const ResultCard = ({
                         <p className="text-gray-600 mt-1">{treatment}</p>
                     </div>
                 )}
-
-                {/* Tombol untuk meminta analisis ahli jika hasil dari saringan */}
                 {!isExpertResult && (
                     <div className="mt-6 pt-4 border-t">
                         <p className='text-sm text-gray-500 mb-2'>Hasil ini adalah deteksi awal. Untuk diagnosis yang lebih akurat, minta analisis dari server ahli kami.</p>

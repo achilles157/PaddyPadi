@@ -8,10 +8,10 @@ import {
 } from "firebase/auth";
 import { createUserProfileDocument } from '../services/userService';
 
-// 1. Definisikan Context di luar komponen
+// Definisikan Context di luar komponen
 const AuthContext = createContext(null);
 
-// 2. Buat Provider untuk "membungkus" aplikasi
+// Buat Provider untuk "membungkus" aplikasi
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// 3. Buat custom hook untuk akses yang mudah
 export const useAuth = () => {
     return useContext(AuthContext);
 };

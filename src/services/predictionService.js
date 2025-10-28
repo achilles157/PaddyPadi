@@ -1,12 +1,10 @@
-// src/services/predictionService.js
-
 import * as tf from '@tensorflow/tfjs';
 
 let model;
-const MODEL_URL = '/models/model.json'; // (Point 1) Model saringan TF.js Anda
-const IMAGE_SIZE = 256; // (Point 2) Sesuai permintaan
+const MODEL_URL = '/models/model.json'; // Model saringan TF.js Anda
+const IMAGE_SIZE = 256; // Sesuai permintaan
 
-// (Point 5) Daftar kelas sesuai modelsaringanplan.txt
+// Daftar kelas sesuai modelsaringanplan.txt
 const CLASSES = [
   'bacterial_leaf_blight',
   'bacterial_leaf_streak',
@@ -23,27 +21,21 @@ const CLASSES = [
 export const loadModel = async () => {
   try {
     if (!model) {
-      console.log('Loading graph model (float16 quantized)...'); // Pesan log baru
+      console.log('Loading graph model (float16 quantized)...'); 
 
-      // ==========================================
       // Gunakan loadGraphModel
       model = await tf.loadGraphModel(MODEL_URL);
-      // ==========================================
-
       console.log('Model loaded successfully.');
 
       // Warm-up graph model
       tf.tidy(() => {
         const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-        // Nama input mungkin perlu disesuaikan jika berbeda di SavedModel
-        // Coba 'serving_default_input_tensor_name' atau cek signature model
-        // Jika tidak, 'input_layer_1' dari model asli mungkin masih valid
-        model.execute({ 'keras_tensor_25787': dummyTensor }); // Sesuaikan nama input jika perlu
+        model.execute({ 'keras_tensor_25787': dummyTensor }); 
       });
       console.log('Model warmed up.');
     }
   } catch (error) {
-    console.error('Error loading graph model:', error); // Pesan error baru
+    console.error('Error loading graph model:', error); 
     throw error;
   }
 };
@@ -52,7 +44,6 @@ const preprocessImage = (imageElement) => {
   return tf.tidy(() => {
     let tensor = tf.browser.fromPixels(imageElement);
     const resized = tf.image.resizeBilinear(tensor, [IMAGE_SIZE, IMAGE_SIZE]);
-    // Normalisasi (0-1) - asumsikan model dilatih dengan ini
     const normalized = resized.div(tf.scalar(255.0));
     const batched = normalized.expandDims(0);
     return batched;
@@ -68,14 +59,7 @@ export const predict = async (imageElement) => {
   const tensor = preprocessImage(imageElement);
 
   try {
-    // ==========================================================
-    // GraphModel menggunakan .executeAsync() (atau .execute())
-    // Sesuaikan nama input jika perlu (sama seperti saat warm-up)
     const resultTensor = model.execute({ 'keras_tensor_25787': tensor });
-    // ==========================================================
-
-    // Dapatkan data dari tensor output
-    // Graph model mungkin mengembalikan array tensor, cek strukturnya jika perlu
     const outputTensor = Array.isArray(resultTensor) ? resultTensor[0] : resultTensor;
     const predictionData = outputTensor.dataSync();
 
@@ -105,15 +89,15 @@ export const predict = async (imageElement) => {
   }
 };
 
-// (Point 6) Fungsi untuk model ahli di server (FastAPI)
+// Fungsi untuk model ahli di server (FastAPI)
 export const predictExpert = async (imageFile) => {
   console.log('Sending image to expert server model (FastAPI):', imageFile.name);
 
-  // TODO: Ganti URL ini dengan URL API FastAPI Anda
-  const YOUR_BACKEND_EXPERT_MODEL_URL = 'https://ml-server-production-ef63.up.railway.app/predict'; // Contoh URL
+  
+  const YOUR_BACKEND_EXPERT_MODEL_URL = 'https://ml-server-production-ef63.up.railway.app/predict'; 
 
   const formData = new FormData();
-  formData.append('image', imageFile); // Pastikan key 'file' sesuai dengan kebutuhan FastAPI Anda
+  formData.append('image', imageFile); 
 
   try {
      const response = await fetch(YOUR_BACKEND_EXPERT_MODEL_URL, {

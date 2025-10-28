@@ -1,33 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom'; // Import Link
+import { useLocation, useNavigate, Link } from 'react-router-dom'; 
 import { Spinner } from '../components/common/Spinner';
 import { getDiseaseById } from '../services/diseaseService';
-import { useAuth } from '../contexts/AuthContext'; // <--- Tambahkan ini
-import { addReport } from '../services/reportService'; // <--- Tambahkan ini
-import { serverTimestamp } from 'firebase/firestore'; // <--- Tambahkan ini
+import { useAuth } from '../contexts/AuthContext'; 
+import { addReport } from '../services/reportService'; 
+import { serverTimestamp } from 'firebase/firestore'; 
 
 const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser, loading: authLoading } = useAuth(); // <--- Dapatkan user yang sedang login
+  const { user, loading: authLoading } = useAuth(); 
 
   // Data hasil prediksi dari `ScanPage`
   const { prediction, imageSrc } = location.state || {};
 
   // State untuk data penyakit dari Firestore
   const [diseaseData, setDiseaseData] = useState(null); 
-  const [loadingDisease, setLoadingDisease] = useState(true); // Ganti nama state loading agar tidak bentrok
+  const [loadingDisease, setLoadingDisease] = useState(true); 
 
   // State untuk proses penyimpanan laporan
-  const [savingReport, setSavingReport] = useState(false); // <--- Tambahkan ini
-  const [saveError, setSaveError] = useState(null); // <--- Tambahkan ini
+  const [savingReport, setSavingReport] = useState(false); 
+  const [saveError, setSaveError] = useState(null); 
 
-  // useEffect untuk fetch data penyakit berdasarkan hasil prediksi
   useEffect(() => {
     if (prediction && prediction.class_name) { 
-      if (prediction.class_name === 'normal') { // Perbarui ke class_name
+      if (prediction.class_name === 'normal') { 
         setDiseaseData({
-          nama: 'Padi Sehat (Normal)', // Sesuaikan dengan nama field di Firestore
+          nama: 'Padi Sehat (Normal)', 
           penjelasan: 'Tanaman padi Anda dalam kondisi sehat.',
           penanggulangan_cepat: ['Tidak diperlukan penanganan khusus, lanjutkan perawatan rutin seperti pemupukan dan pengairan yang baik.'] // Sesuaikan format
         });
@@ -36,7 +35,7 @@ const ResultPage = () => {
         const fetchDiseaseData = async () => {
           setLoadingDisease(true);
           try {
-            const data = await getDiseaseById(prediction.class_name); // Gunakan class_name sebagai ID di Firestore
+            const data = await getDiseaseById(prediction.class_name); 
             if (data) {
               setDiseaseData(data);
             } else {
@@ -54,14 +53,14 @@ const ResultPage = () => {
     } else {
       setLoadingDisease(false);
     }
-  }, [prediction]); // Dependensi: prediction
+  }, [prediction]); 
 
   // --- Fungsi untuk Menyimpan Laporan ---
   const handleSaveReport = async () => {
-    if (!currentUser) {
-      setSaveError('Anda harus login untuk menyimpan laporan.');
-      alert('Anda harus login untuk menyimpan laporan.');
-      return;
+    if (!user) {
+        setSaveError("Anda harus login untuk menyimpan laporan.");
+        alert("Anda harus login untuk menyimpan laporan.");
+        return;
     }
     if (!prediction || !imageSrc) {
         setSaveError('Tidak ada hasil prediksi atau gambar untuk disimpan.');
@@ -73,24 +72,20 @@ const ResultPage = () => {
     setSaveError(null);
 
     try {
-      // Pastikan semua data yang dibutuhkan ada
       const reportData = {
-        userId: currentUser.uid,
-        predictionClass: prediction.class_name, // Simpan nama kelas prediksi
+        userId: user.uid,
+        predictionClass: prediction.class_name, 
         confidence: prediction.confidence,
-        modelUsed: prediction.model, // Simpan model yang digunakan
-        imageUrl: imageSrc, // Catatan: Jika imageSrc adalah data URL yang sangat panjang, 
-                            // sebaiknya upload ke Firebase Storage terlebih dahulu dan simpan URL-nya.
-                            // Untuk saat ini, kita simpan string-nya.
-        diseaseId: prediction.class_name, // Mengacu ke ID penyakit di koleksi diseases
-        diseaseDetails: diseaseData ? { // Simpan detail penyakit jika sudah dimuat
+        modelUsed: prediction.model, 
+        imageUrl: imageSrc, // Catatan: akan di improve ke firestore storage nanti 
+        diseaseId: prediction.class_name, 
+        diseaseDetails: diseaseData ? { 
             nama: diseaseData.nama,
             penjelasan: diseaseData.penjelasan,
             penyebab: diseaseData.penyebab,
             penanggulangan_cepat: diseaseData.penanggulangan_cepat,
-            // ... tambahkan field lain yang relevan dari diseaseData
         } : null,
-        timestamp: serverTimestamp(), // Timestamp dari server Firestore
+        timestamp: serverTimestamp(), 
       };
 
       await addReport(reportData); // Panggil fungsi dari reportService.js
@@ -105,15 +100,14 @@ const ResultPage = () => {
     }
   };
   // --- Akhir Fungsi Simpan Laporan ---
-
-if (authLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-center">
-        <Spinner />
-        <p className="text-gray-500">Memeriksa autentikasi...</p>
-      </div>
-    );
-  }
+  if (authLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-center">
+          <Spinner />
+          <p className="text-gray-500">Memeriksa autentikasi...</p>
+        </div>
+      );
+    }
 
   // Jika tidak ada prediksi atau gambar
   if (!prediction || !imageSrc) {
@@ -131,7 +125,6 @@ if (authLoading) {
     );
   }
 
-  // Menentukan warna border berdasarkan confidence
   const getConfidenceColor = (conf) => {
     if (conf > 0.85) return 'border-green-500';
     if (conf > 0.6) return 'border-yellow-500';
@@ -162,7 +155,7 @@ if (authLoading) {
             Model: {prediction.model}
           </span>
 
-          {loadingDisease ? ( // Gunakan loadingDisease di sini
+          {loadingDisease ? ( 
             <div className="my-4">
               <Spinner />
               <p className="text-gray-500">Memuat detail penyakit...</p>
@@ -197,26 +190,21 @@ if (authLoading) {
                 )}
               </div>
             ) : (
-            // Tampil jika loading selesai tapi data tidak ada (dan bukan 'normal')
-            prediction.class_name !== 'normal' && ( // Perbarui ke class_name
+            prediction.class_name !== 'normal' && ( 
               <p className="mt-6 text-red-500">Detail untuk penyakit ini tidak ditemukan di database.</p>
             )
           )}
-
-          {/* --- Tombol Simpan Laporan --- */}
           {saveError && <p className="text-red-500 text-sm mt-4">{saveError}</p>}
           <button
             onClick={handleSaveReport}
-            disabled={savingReport || loadingDisease} // Disable saat loading disease atau saving
+            disabled={savingReport || loadingDisease} 
             className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-full transition duration-300 disabled:opacity-50"
           >
             {savingReport ? <Spinner size="sm" /> : 'Simpan Laporan'}
           </button>
           {/* --- Akhir Tombol Simpan Laporan --- */}
-
-          {/* Tombol Scan Lagi */}
           <button
-            onClick={() => navigate('/scan')}
+            onClick={() => navigate('/scan')} // Navigasi kembali ke halaman scan
             className="mt-4 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-full transition duration-300"
           >
             Scan Lagi

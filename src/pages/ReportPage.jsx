@@ -1,32 +1,24 @@
-// src/pages/ReportPage.jsx
 import React, { useState, useEffect } from 'react';
 import { getReports, deleteReport } from '../services/reportService';
 import { useAuth } from '../contexts/AuthContext'; 
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
-// Asumsi Anda memiliki komponen Spinner
-import { Spinner } from '../components/common/Spinner'; // Sesuaikan path ini jika beda
+import { Spinner } from '../components/common/Spinner'; 
 
 const ReportPage = () => {
-  // Dapatkan currentUser dan loading status dari AuthContext
-  const { currentUser, loading: authLoading, isAuthenticated } = useAuth(); 
+  const { user, loading: authLoading, isAuthenticated } = useAuth(); 
   
   const [reports, setReports] = useState([]);
-  const [pageLoading, setPageLoading] = useState(true); // Loading untuk data laporan
+  const [pageLoading, setPageLoading] = useState(true); 
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserReports = async () => {
-      setPageLoading(true); // Mulai loading untuk data laporan
-      setError(null);     // Reset error
-
-      // KUNCI: Tunggu sampai authLoading selesai DAN user terautentikasi
-      // Jika authLoading masih true, atau user tidak terautentikasi, 
-      // jangan lakukan fetch. Render kondisional di bawah akan menanganinya.
-      if (!authLoading && isAuthenticated && currentUser?.uid) { // Periksa currentUser?.uid di sini
+      setPageLoading(true); 
+      setError(null);     
+      if (!authLoading && isAuthenticated && user?.uid) { 
         try {
-          // Sekarang, kita yakin currentUser.uid tersedia
-          const userReports = await getReports(currentUser.uid); 
+          const userReports = await getReports(user.uid); 
           setReports(userReports);
         } catch (err) {
           setError("Failed to fetch reports. " + err.message); 
@@ -35,17 +27,13 @@ const ReportPage = () => {
           setPageLoading(false);
         }
       } else if (!authLoading && !isAuthenticated) {
-          // Jika authLoading selesai tapi tidak terautentikasi, set error.
-          // Ini penting karena ProtectedRoute mungkin merender ReportPage sebelum redirect.
           setError("You need to be logged in to view your reports.");
           setPageLoading(false);
       }
-      // Jika authLoading masih true, kita tidak melakukan apa-apa,
-      // karena kita akan menampilkan spinner di render kondisional di bawah.
     };
 
     fetchUserReports();
-  }, [authLoading, isAuthenticated, currentUser]); // Dependensi utama
+  }, [authLoading, isAuthenticated, user]); 
 
   const handleDelete = async (reportId) => {
     if (window.confirm("Are you sure you want to delete this report?")) {
@@ -60,13 +48,10 @@ const ReportPage = () => {
     }
   };
 
-  // --- Render Kondisional Awal ---
-  // Tampilkan spinner jika AuthContext masih loading status autentikasi
   if (authLoading || pageLoading) {
     return <Spinner message={authLoading ? "Checking authentication..." : "Loading reports..."} />;
   }
-
-  // 2. Tampilkan error jika ada
+  // Tampilkan pesan jika tidak terautentikasi
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-full text-red-500">
@@ -140,7 +125,7 @@ const ReportPage = () => {
             />
             <div className="p-4">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                {report.prediction ? `Prediction: ${report.prediction}` : 'No Prediction'}
+                 {report.predictionClass ? `Prediction: ${report.predictionClass.replace(/_/g, ' ')}` : 'No Prediction'} 
               </h2>
               <p className="text-gray-600 text-sm mb-3">
                 Date: {report.timestamp ? format(report.timestamp.toDate(), 'dd MMMM yyyy HH:mm') : 'N/A'}

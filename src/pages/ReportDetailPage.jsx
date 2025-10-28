@@ -6,23 +6,23 @@ import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
 
 const ReportDetailPage = () => {
-  const { reportId } = useParams(); // Ambil ID laporan dari URL
+  const { reportId } = useParams(); 
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchReport = async () => {
-      if (!currentUser) {
+      if (!user) {
         setLoading(false);
         setError("User not authenticated.");
         return;
       }
       try {
         const fetchedReport = await getReportById(reportId);
-        if (fetchedReport && fetchedReport.userId === currentUser.uid) { // Pastikan user pemilik laporan
+        if (fetchedReport && fetchedReport.userId === user.uid) { 
           setReport(fetchedReport);
         } else {
           setError("Report not found or you don't have permission to view it.");
@@ -37,7 +37,7 @@ const ReportDetailPage = () => {
     };
 
     fetchReport();
-  }, [reportId, currentUser, navigate]);
+  }, [reportId, user, navigate]);
 
   if (loading) {
     return (
@@ -90,7 +90,7 @@ const ReportDetailPage = () => {
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-700">Prediction:</h2>
-          <p className="text-gray-900 text-lg">{report.prediction || 'N/A'}</p>
+          <p className="text-gray-900 text-lg">{report.diseaseDetails.nama || 'N/A'}</p>
         </div>
 
         <div>
@@ -99,8 +99,6 @@ const ReportDetailPage = () => {
             {report.timestamp ? format(report.timestamp.toDate(), 'dd MMMM yyyy HH:mm:ss') : 'N/A'}
           </p>
         </div>
-
-        {/* Tambahkan detail laporan lainnya jika ada */}
         {report.confidence && (
           <div>
             <h2 className="text-xl font-semibold text-gray-700">Confidence:</h2>

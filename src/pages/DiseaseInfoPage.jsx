@@ -1,13 +1,11 @@
-// src/pages/DiseaseInfoPage.jsx
-
-import React, { useState, useEffect, useCallback } from 'react'; // <-- Tambahkan useCallback
+import React, { useState, useEffect, useCallback } from 'react'; 
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react'; // <-- Tambahkan ikon Edit, Trash2
-import { getDiseases, saveDisease, deleteDisease } from '../services/diseaseService'; // <-- Impor fungsi save/delete
+import { PlusCircle, Edit, Trash2 } from 'lucide-react'; 
+import { getDiseases, saveDisease, deleteDisease } from '../services/diseaseService'; 
 import { Spinner } from '../components/common/Spinner';
-import AddEditDiseaseForm from '../components/common/AddEditDiseaseForm'; // <-- Impor komponen form
-import toast from 'react-hot-toast'; // <-- Impor toast untuk notifikasi
+import AddEditDiseaseForm from '../components/common/AddEditDiseaseForm'; 
+import toast from 'react-hot-toast'; 
 
 const DiseaseInfoPage = () => {
     const { isAdmin } = useAuth();
@@ -43,7 +41,7 @@ const DiseaseInfoPage = () => {
 
     // Fungsi untuk membuka modal tambah
     const handleOpenAddModal = () => {
-        setEditingDisease(null); // Pastikan tidak ada data edit
+        setEditingDisease(null); // Reset data edit saat menambah
         setIsModalOpen(true);
     };
 

@@ -1,10 +1,8 @@
-// src/pages/ScanPage.jsx
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CameraScanner } from '../components/common/CameraScanner';
 import ImageUploader from '../components/common/ImageUploader';
-import { loadModel, predict, predictExpert } from '../services/predictionService'; // Import fungsi baru
+import { loadModel, predict, predictExpert } from '../services/predictionService'; 
 import { Spinner } from '../components/common/Spinner';
 import { CameraIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
@@ -13,21 +11,20 @@ import toast from 'react-hot-toast';
 const formatPercent = (val) => `${(val * 100).toFixed(1)}%`;
 
 export default function ScanPage() {
-    const [modelStatus, setModelStatus] = useState('loading'); // Status model TF.js
-    const [scanMode, setScanMode] = useState('upload'); // 'upload' atau 'camera'
-    const [loading, setLoading] = useState(false); // Loading untuk prediksi (upload)
-    const [preview, setPreview] = useState(null); // Preview gambar upload
-    
+    const [modelStatus, setModelStatus] = useState('loading'); 
+    const [scanMode, setScanMode] = useState('upload'); 
+    const [loading, setLoading] = useState(false); 
+    const [preview, setPreview] = useState(null); 
     // State untuk hasil live scan
     const [liveResult, setLiveResult] = useState({ label: 'Mengarahkan...', confidence: 0 });
     const [lastPrediction, setLastPrediction] = useState(null); // Menyimpan prediksi terakhir
     
     const navigate = useNavigate();
-    const cameraRef = useRef(null); // Ref ke CameraScanner
-    const requestRef = useRef(); // Ref untuk animation frame loop
-    const isDetecting = useRef(false); // Kontrol loop deteksi
+    const cameraRef = useRef(null); 
+    const requestRef = useRef(); 
+    const isDetecting = useRef(false); 
 
-    // (Point 1) Muat model saringan (TF.js) saat halaman dibuka
+    // Muat model saringan (TF.js) saat halaman dibuka
     useEffect(() => {
         loadModel()
             .then(() => {
@@ -40,21 +37,20 @@ export default function ScanPage() {
             });
     }, []);
 
-    // (Point 3 - Logika Live Scan) Loop deteksi menggunakan requestAnimationFrame
+    // Logika Live Scan Loop deteksi menggunakan requestAnimationFrame
     const detectionLoop = useCallback(async () => {
         if (isDetecting.current && modelStatus === 'ready' && cameraRef.current?.videoElement) {
             const video = cameraRef.current.videoElement;
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                const result = await predict(video); // Panggil model TF.js
+                const result = await predict(video); 
                 if (result) {
-                    setLiveResult(result); // Update UI
-                    setLastPrediction(result); // Simpan untuk capture
+                    setLiveResult(result); 
+                    setLastPrediction(result); 
                 }
             }
         }
-        // Panggil frame berikutnya
         requestRef.current = requestAnimationFrame(detectionLoop);
-    }, [modelStatus]); // Dependensi pada modelStatus
+    }, [modelStatus]); 
 
     // Kontrol untuk memulai dan menghentikan loop deteksi
     useEffect(() => {
@@ -73,7 +69,7 @@ export default function ScanPage() {
         };
     }, [scanMode, modelStatus, detectionLoop]); // Kontrol loop saat mode berubah
 
-    // (Point 3 - Capture) Handler untuk tombol capture kamera
+    // Handler untuk tombol capture kamera
     const handleCameraCapture = () => {
         if (!cameraRef.current || !lastPrediction) {
             toast.error("Kamera atau prediksi belum siap.");
@@ -89,14 +85,14 @@ export default function ScanPage() {
             return;
         }
 
-        // (Point 5) Kirim hasil saringan (TF.js) dan gambar ke ResultPage
+        // Kirim hasil saringan (TF.js) dan gambar ke ResultPage
         // ResultPage akan menampilkan info ini DAN opsi "Prediksi Lebih Lanjut"
         navigate('/result', {
             state: { prediction: lastPrediction, imageSrc: imageSrc },
         });
     };
     
-    // (Point 6 - Upload) Handler untuk upload gambar (langsung ke Model Ahli)
+    // Handler untuk upload gambar (langsung ke Model Ahli)
     const handleUploadPredict = async (imageFile) => {
         if (!imageFile) return;
 
@@ -138,10 +134,10 @@ export default function ScanPage() {
         );
     }
 
-    // (Styling Asli) Tampilan UI utama
+    // Tampilan UI utama
     return (
         <div>
-            {loading && ( // Spinner overlay untuk mode UPLOAD
+            {loading && ( 
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-50">
                     <Spinner />
                     <p className="mt-4 text-lg text-white">Menganalisis (Model Ahli)...</p>
@@ -181,7 +177,7 @@ export default function ScanPage() {
                     <div className="relative w-full max-w-md mx-auto aspect-square rounded-lg overflow-hidden shadow-lg">
                         <CameraScanner ref={cameraRef} />
                         
-                        {/* (Point 3 - UI Live Scan) Overlay untuk hasil live */}
+                        {/* Overlay untuk hasil live */}
                         <div className="absolute top-2 left-2 right-2 p-2 bg-black bg-opacity-50 rounded-lg text-white text-center">
                             <span className="font-semibold capitalize">
                                 {liveResult.label.replace(/_/g, ' ')}:

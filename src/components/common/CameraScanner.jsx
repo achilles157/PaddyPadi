@@ -1,10 +1,9 @@
 import React, { forwardRef } from 'react';
 import { useCamera } from '../../hooks/userCamera';
 
-export const CameraScanner = forwardRef(({ onCapture }, ref) => {
-  const { videoRef, takePicture } = useCamera(onCapture);
+export const CameraScanner = forwardRef((props, ref) => { 
+  const { videoRef, takePicture } = useCamera();
 
-  // Expose videoRef and takePicture through the ref passed from the parent
   React.useImperativeHandle(ref, () => ({
     videoElement: videoRef.current,
     takePicture: takePicture

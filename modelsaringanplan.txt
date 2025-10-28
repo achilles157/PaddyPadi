@@ -1,73 +1,80 @@
-Tentu, ini adalah rencana aksi yang komprehensif untuk membuat model saringan EfficientNetV2b3 uint8 secara maksimal, yang dioptimalkan untuk kecepatan deteksi *real-time* di PWA Anda.
+# Rencana Pengembangan Model EfficientNetV2B2 untuk PWA PaddyPadi
 
-Kita akan menggunakan dataset dari Kaggle yang Anda berikan dan fokus pada teknik-teknik yang menghasilkan model yang ringan, cepat, namun tetap cukup akurat untuk tugas "menyaring". Seluruh rencana ini dirancang untuk dijalankan di **Google Colab**.
+## 🎯 Tujuan Utama
+- Mengembangkan model deteksi penyakit padi yang ringan dan cepat
+- Mengoptimalkan untuk inferensi real-time di PWA
+- Mengkonversi ke format TensorFlow.js
 
----
-### ### 🏆 Rencana Pembuatan Model Saringan EfficientNetV2B3
+## 📋 Fase Pengembangan
 
-Tujuan utama kita adalah: **Kecepatan Inferensi Maksimal** dengan **Akurasi yang "Cukup Baik"**. Model ini tidak harus sempurna, tetapi harus bisa membedakan antara daun sehat dan daun yang kemungkinan berpenyakit dengan sangat cepat.
+### 1. Persiapan Dataset
+- Menggunakan dataset penyakit padi dari Kaggle
+- Pembagian data:
+  - Training: 80%
+  - Validasi: 20%
+- Preprocessing gambar:
+  - Resize ke 256x256 (ukuran standar EfficientNetV2B2)
+  - Normalisasi piksel
 
-#### **Fase 1: Persiapan Data & Lingkungan**
+### 2. Data Augmentasi
+- Teknik augmentasi:
+  - Random flip (horizontal/vertical)
+  - Random rotation (±20°)
+  - Random zoom (±15%)
+  - Random brightness/contrast
+  - Random crop
+  - dan beberapa augmentasi lain
 
-Langkah ini krusial untuk memastikan model belajar dari data yang berkualitas dan beragam.
+### 3. Arsitektur Model
+- Base model: EfficientNetV2B2 (pre-trained ImageNet)
+- Modifikasi arsitektur:
+  - Remove classification head
+  - Add GlobalAveragePooling2D
+  - Add Dropout(0.2)
+  - Add Dense layer (10 classes, softmax)
 
-1.  **Setup Google Colab & Kaggle API:**
-    * Kita akan mengunduh dataset langsung dari Kaggle ke Colab untuk kecepatan maksimal. Ini memerlukan `kaggle.json` API key Anda.
+### 4. Training Strategy
+- Initial training:
+  - Freeze base model layers
+  - Train head layers (15-20 epochs)
+- Fine-tuning:
+  - Unfreeze last 15-20 layers
+  - Very small learning rate (1e-5)
+  - Train additional 10-15 epochs
 
-2.  **Pemuatan & Pemisahan Data:**
-    * Memuat data gambar dari direktori yang sudah di-unzip.
-    * Membagi data menjadi set **Training (80%)** dan **Validation (20%)**. Kita tidak memerlukan set *testing* terpisah untuk model saringan ini, karena validasi akhir akan terjadi di aplikasi.
+### 5. Model Optimization
+- Evaluasi performa:
+  - Target accuracy: >75%
+  - Monitor inference speed
+- Quantization:
+  - Convert to uint8
+  - Reduce model size
+  - Optimize for mobile devices
 
-3.  **Preprocessing & Augmentasi Data (Kunci Performa):**
-    * **Ukuran Gambar:** Kita akan menggunakan ukuran input 256 256. 
-    * **Augmentasi Agresif:** Karena model harus tangguh terhadap berbagai kondisi kamera *real-time*, kita akan menerapkan augmentasi yang kuat pada data training:
-        * `RandomFlip`: Membalik gambar secara horizontal dan vertikal.
-        * `RandomRotation`: Memutar gambar secara acak.
-        * `RandomZoom`: Melakukan zoom acak.
-        * `RandomContrast` & `RandomBrightness`: Mensimulasikan kondisi pencahayaan yang berbeda-beda di lapangan.
+### 6. Konversi ke TensorFlow.js
+- Menggunakan tensorflowjs_converter
+- Optimasi:
+  - Weight quantization
+  - Layer optimization
+  - Generate web-friendly format
 
-#### **Fase 2: Pembangunan Model (Transfer Learning dengan EfficientNetV2B3)
+### 7. Deployment Preparation
+- Format output: .json model topology
+- Sharded weight files
+- Metadata configuration
+- Browser compatibility check
 
-Kita akan menggunakan *transfer learning* untuk memanfaatkan pengetahuan yang sudah dimiliki EfficientNetV2B3
+## 📊 Expected Outcomes
+- Model size: <10MB
+- Inference time: <500ms
+- Accuracy: >75%
+- Format: TensorFlow.js compatible
 
-1.  **Pilih Arsitektur:** Kita akan menggunakan EfficientNetV2B3 uint8 Varian ini adalah yang paling ringan dan cepat, sangat cocok untuk tugas saringan.
-2.  **Membangun Model:**
-    * Muat EfficientNetV2B3 yang sudah dilatih pada ImageNet, tanpa lapisan klasifikasi teratas (`include_top=False`).
-    * **Bekukan (freeze)** seluruh lapisan dari *base model* ini. Kita ingin model ini tetap menjadi "pengekstrak fitur" yang cepat dan tidak mengubah pengetahuannya secara drastis.
-    * Tambahkan "kepala" klasifikasi kustom di atasnya:
-        * `GlobalAveragePooling2D()`: Untuk meratakan output fitur.
-        * `Dropout(0.2)`: Untuk mencegah *overfitting*.
-        * `Dense(10, activation='softmax')`: Lapisan output dengan 10 neuron sesuai jumlah kelas penyakit.
+## 🔍 Validation Points
+- Browser compatibility
+- Memory usage
+- Loading time
+- Inference speed
+- Prediction accuracy
 
-#### **Fase 3: Pelatihan & Fine-Tuning**
-
-Ini adalah proses melatih model untuk mengenali penyakit padi.
-
-1.  **Kompilasi Model:**
-    * **Optimizer:** `Adam` adalah pilihan yang solid dan cepat.
-    * **Loss Function:** `SparseCategoricalCrossentropy` karena label kita berupa integer.
-
-2.  **Pelatihan Awal:**
-    * Latih model selama beberapa epoch (misalnya, 15-20 epoch) dengan *base model* yang masih dibekukan. Tujuannya adalah agar lapisan "kepala" yang baru kita tambahkan belajar terlebih dahulu.
-
-3.  **Gunakan Callbacks (Untuk Hasil Maksimal):**
-    * **`EarlyStopping`:** Memonitor `val_loss` dan menghentikan training secara otomatis jika performa tidak lagi membaik. Ini mencegah *overfitting* dan menghemat waktu.
-    * **`ReduceLROnPlateau`:** Mengurangi *learning rate* secara otomatis ketika performa mulai stagnan. Ini membantu model menemukan titik optimal yang lebih baik di akhir pelatihan.
-
-4.  **Fine-Tuning (Opsional, tapi Direkomendasikan):**
-    * Setelah pelatihan awal, kita bisa "mencairkan" (unfreeze) beberapa lapisan terakhir dari EfficientNetV2B3(misalnya, 15 lapisan terakhir).
-    * Lanjutkan training untuk beberapa epoch tambahan dengan *learning rate* yang **sangat kecil**. Ini memungkinkan model untuk sedikit menyesuaikan fitur-fitur yang sudah ada agar lebih relevan dengan gambar daun padi.
-
-#### **Fase 4: Evaluasi & Konversi**
-
-1.  **Evaluasi Performa:**
-    * Visualisasikan kurva *accuracy* dan *loss* untuk memastikan model tidak *overfitting*. Untuk model saringan, `val_accuracy` di atas **70-75%** sudah bisa dianggap sangat baik, karena prioritas kita adalah kecepatan.
-
-2.  **Simpan Model:**
-    * Simpan model terlatih dalam format Keras (`.h5` atau `SavedModel`).
-
-3.  **Konversi ke TensorFlow.js:**
-    * Gunakan `tensorflowjs_converter` untuk mengubah model Keras Anda menjadi format web.
-    * **Terapkan Kuantisasi:** Selama konversi, gunakan opsi kuantisasi (misalnya, `quantization_bytes=1`). Ini akan memperkecil ukuran file model secara signifikan (seringkali 4x lebih kecil) dan mempercepat inferensi, yang merupakan **target utama** kita.
-
-Dengan mengikuti rencana ini, Anda akan menghasilkan sebuah model EfficientNetV2B3 terkuantisasi yang sangat optimal: ringan, cepat, dan cukup akurat untuk menjadi "penjaga gerbang" yang efisien di PWA PaddyPadi Anda.
+Rencana ini difokuskan pada pengembangan model EfficientNetV2B2 yang optimal untuk penggunaan web, dengan mempertimbangkan batasan dan kebutuhan PWA PaddyPadi.

@@ -1,22 +1,20 @@
-// src/pages/DiseaseDetailPage.jsx
-
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom'; // <-- Import useNavigate
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getDiseaseById } from '../services/diseaseService';
 import { ArrowLeft } from 'lucide-react';
-import { Spinner } from '../components/common/Spinner'; // <-- Ubah import Spinner
+import { Spinner } from '../components/common/Spinner'; 
 
 const DiseaseDetailPage = () => {
     // Gunakan useParams untuk mendapatkan diseaseId dari URL
-    const { diseaseId } = useParams(); // <-- Ganti 'id' menjadi 'diseaseId' agar sesuai dengan route di App.jsx
+    const { diseaseId } = useParams(); 
     const [disease, setDisease] = useState(null);
-    const [loading, setLoading] = useState(true); // <-- Tambahkan state loading
-    const [error, setError] = useState(null); // <-- Tambahkan state error
-    const navigate = useNavigate(); // <-- Hook untuk navigasi kembali
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchDisease = async () => {
-            if (!diseaseId) { // Tambahkan pengecekan jika diseaseId tidak ada
+            if (!diseaseId) { 
                 setError("ID Penyakit tidak ditemukan.");
                 setLoading(false);
                 return;
@@ -25,10 +23,10 @@ const DiseaseDetailPage = () => {
             setError(null);
             try {
                 // Gunakan diseaseId untuk fetch data
-                console.log("DiseaseDetailPage: Mencari dokumen dengan ID:", diseaseId); // Log ID
+                console.log("DiseaseDetailPage: Mencari dokumen dengan ID:", diseaseId); 
                 const data = await getDiseaseById(diseaseId);
                 if (data) {
-                    console.log("DiseaseDetailPage: Data ditemukan:", data); // Log data
+                    console.log("DiseaseDetailPage: Data ditemukan:", data); 
                     setDisease(data);
                 } else {
                     console.log("DiseaseDetailPage: Dokumen TIDAK ditemukan untuk ID:", diseaseId);
@@ -42,9 +40,7 @@ const DiseaseDetailPage = () => {
             }
         };
         fetchDisease();
-    }, [diseaseId]); // <-- Dependensi useEffect adalah diseaseId
-
-    // Tampilkan loading spinner
+    }, [diseaseId]); 
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -53,13 +49,11 @@ const DiseaseDetailPage = () => {
             </div>
         );
     }
-
-    // Tampilkan pesan error jika ada
     if (error) {
         return (
             <div className="p-4 text-center">
                  <button
-                    onClick={() => navigate(-1)} // Tombol kembali ke halaman sebelumnya
+                    onClick={() => navigate(-1)} 
                     className="flex items-center gap-2 text-sage font-semibold mb-4 hover:underline"
                 >
                     <ArrowLeft size={20} /> Kembali
@@ -68,13 +62,11 @@ const DiseaseDetailPage = () => {
             </div>
         );
     }
-
-     // Tampilkan pesan jika data tidak ada setelah loading selesai
      if (!disease) {
          return (
              <div className="p-4 text-center">
                  <button
-                    onClick={() => navigate(-1)} // Tombol kembali
+                    onClick={() => navigate(-1)} 
                     className="flex items-center gap-2 text-sage font-semibold mb-4 hover:underline"
                 >
                     <ArrowLeft size={20} /> Kembali
@@ -83,21 +75,16 @@ const DiseaseDetailPage = () => {
              </div>
         );
      }
-
-    // Tampilkan detail penyakit jika data sudah ada
     return (
-        <div className="p-4 pb-20"> {/* Tambahkan padding bottom */}
-            {/* Tombol kembali */}
+        <div className="p-4 pb-20"> 
              <button
-                onClick={() => navigate(-1)} // Kembali ke halaman sebelumnya
+                onClick={() => navigate(-1)} 
                 className="flex items-center gap-2 text-sage font-semibold mb-4 hover:underline"
             >
                 <ArrowLeft size={20} /> Kembali
             </button>
-
-            {/* Gunakan field 'nama' */}
+                {/* Judul Penyakit */}
             <h1 className="text-3xl font-bold text-charcoal mb-6">{disease.nama}</h1>
-
             {/* Bagian Penjelasan (Gejala) */}
             {disease.penjelasan && (
                 <div className="mb-6">
@@ -105,7 +92,6 @@ const DiseaseDetailPage = () => {
                     <p className="text-charcoal whitespace-pre-line">{disease.penjelasan}</p>
                 </div>
             )}
-
              {/* Bagian Penyebab */}
              {disease.penyebab && (
                 <div className="mb-6">
@@ -113,8 +99,6 @@ const DiseaseDetailPage = () => {
                     <p className="text-charcoal whitespace-pre-line">{disease.penyebab}</p>
                 </div>
              )}
-
-
             {/* Bagian Penanggulangan (Treatment/Pencegahan) */}
             {disease.penanggulangan_cepat && Array.isArray(disease.penanggulangan_cepat) && disease.penanggulangan_cepat.length > 0 && (
                  <div className="mb-6">
@@ -126,9 +110,6 @@ const DiseaseDetailPage = () => {
                      </ul>
                  </div>
             )}
-
-            {/* Anda bisa tambahkan field lain jika ada di Firestore */}
-
         </div>
     );
 };

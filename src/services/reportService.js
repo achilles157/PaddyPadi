@@ -1,5 +1,4 @@
-// src/services/reportService.js
-import { db } from './firebase'; // Pastikan path ini benar ke inisialisasi Firebase Anda
+import { db } from './firebase'; 
 import { 
   collection, 
   getDocs, 
@@ -11,7 +10,7 @@ import {
   getDoc,
   updateDoc,
   deleteDoc,
-  where // Tambahkan 'where' untuk query spesifik user
+  where 
 } from 'firebase/firestore';
 
 const reportsCollectionRef = collection(db, 'reports');
@@ -21,10 +20,8 @@ export const getReports = async (userId = null) => {
   try {
     let q;
     if (userId) {
-      // Jika userId diberikan, ambil laporan hanya untuk user tersebut
       q = query(reportsCollectionRef, where('userId', '==', userId), orderBy('timestamp', 'desc'));
     } else {
-      // Jika userId tidak diberikan, ambil semua laporan (mungkin hanya untuk admin/testing)
       q = query(reportsCollectionRef, orderBy('timestamp', 'desc'));
     }
     const data = await getDocs(q);
@@ -88,7 +85,7 @@ export const deleteReport = async (reportId) => {
   }
 };
 
-// Fungsi untuk mendapatkan laporan terbaru (misalnya 5 laporan terakhir)
+// Fungsi untuk mendapatkan laporan terbaru 
 export const getLatestReports = async (count = 5, userId = null) => {
   try {
     let q;

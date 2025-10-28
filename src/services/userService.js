@@ -1,4 +1,3 @@
-// src/services/userService.js
 import { db } from './firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -14,7 +13,7 @@ export const createUserProfileDocument = async (user) => {
     const userData = {
         uid: user.uid,
         email: user.email,
-        displayName: user.email.split('@')[0], // Nama default dari email
+        displayName: user.email.split('@')[0], 
         createdAt: serverTimestamp(),
     };
 

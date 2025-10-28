@@ -1,56 +1,91 @@
-Berdasarkan tujuan Anda untuk deteksi *live-scan* dan penggunaan model **EfficientNetV2B3**, berikut adalah desain arsitektur dan pilihan *tech stack* yang paling optimal.
+# Rencana Pengembangan PaddyPadi PWA
 
----
-### ### 1. Desain Arsitektur: *Hybrid Inference* (Pilihan Terbaik untuk Real-Time)
+## 🎯 Tujuan Utama
+- Membangun sistem deteksi penyakit padi real-time dengan arsitektur hybrid
+- Mengoptimalkan user experience dengan inference cepat
+- Meminimalkan penggunaan resource device dan bandwidth
 
-Untuk mencapai deteksi *real-time* tanpa membuat HP pengguna panas atau boros kuota, kita tidak bisa hanya mengandalkan server. Arsitektur terbaik adalah **Hybrid**, yang membagi tugas antara aplikasi (client) dan server.
+## 📋 Fase Pengembangan
 
-**Konsepnya:**
-1.  **Model Saringan Cepat (di Aplikasi/Client):** Sebuah versi **super ringan** dari model Anda akan berjalan langsung di browser menggunakan TensorFlow.js yang terkuantisasi uint8 Tugasnya bukan untuk mendiagnosis, tetapi hanya untuk menjawab pertanyaan: **"Apakah ada sesuatu yang mencurigakan di frame kamera ini?"** (Ya/Tidak). Ini berjalan terus-menerus dan terasa instan bagi pengguna.
-2.  **Model Ahli Akurat (di Server):** HANYA jika model saringan mendeteksi sesuatu yang mencurigakan, aplikasi akan mengambil satu gambar berkualitas tinggi dan mengirimkannya ke *backend*. Di sinilah model **EfficientNetV2B3** Anda yang besar dan akurat akan bekerja untuk memberikan diagnosis yang presisi.
+### 1. Arsitektur Hybrid
+#### Model Saringan (Client-side)
+- Format: TensorFlow.js (uint8 quantized)
+- Base model: EfficientNetV2B2
+- Tugas: Binary classification (suspicious/normal)
+- Target size: <10MB
+- Inference time: <500ms
 
-**Keuntungannya:**
-* **Performa Real-Time:** Pengguna mendapatkan umpan balik visual instan dari model saringan di HP mereka.
-* **Mengurangi Beban Jaringan & Server:** Anda tidak mengirim *streaming video* ke server, melainkan hanya satu gambar saat dibutuhkan. Ini menghemat biaya server dan kuota pengguna.
-* **Akurasi Maksimal:** Diagnosis akhir tetap berasal dari model terbaik Anda (EfficientNetV2B3) yang berjalan di lingkungan server yang kuat (dengan GPU).
+#### Model Ahli (Server-side)
+- Format: SavedModel/H5
+- Base model: EfficientNetV2B3
+- Tugas: Multi-class classification (detailed diagnosis)
+- Berjalan di Python backend
 
----
-### ### 2. Strategi Model: Dua Format untuk Dua Tugas
+### 2. Frontend Development (React + Vite)
+- Implementasi PWA features
+- TensorFlow.js integration
+- Real-time camera feed processing
+- Tailwind CSS untuk UI/UX
+- Offline capability
+- Service worker setup
 
-Berdasarkan arsitektur *hybrid* di atas, Anda akan membutuhkan **dua versi** dari model EfficientNetB0 yang telah Anda latih:
+### 3. Backend Development (FastAPI)
+- REST API endpoints
+- Model inference service
+- Image processing pipeline
+- Authentication system
+- Database integration
+- File handling
 
-1.  **Format TensorFlow.js (`tfjs`) - WAJIB**
-    * **Tujuan:** Untuk **Model Saringan** yang berjalan di *client-side* (di dalam PWA React Anda).
-    * **Proses:** Setelah Anda selesai melatih model di Python, Anda akan mengonversinya menjadi format TensorFlow.js. Sangat disarankan untuk melakukan **kuantisasi (quantization)** selama proses konversi. Ini akan memperkecil ukuran model secara drastis (misalnya dari 30MB menjadi 7MB) dan membuatnya berjalan jauh lebih cepat di HP, dengan sedikit penurunan akurasi yang bisa diterima untuk tugas "saringan".
-    * **Bentuk Akhir:** Kumpulan file, termasuk `model.json` dan beberapa file bobot biner (`*.bin`).
+### 4. Firebase Integration
+- Authentication
+- Cloud Firestore setup
+- Cloud Storage configuration
+- Real-time updates
+- User management
 
-2.  **Format `.h5` atau `SavedModel` (TensorFlow/Keras) - WAJIB**
-    * **Tujuan:** Untuk **Model Ahli** yang berjalan di *backend* Python Anda.
-    * **Proses:** Ini adalah format asli hasil dari `model.save()` setelah Anda selesai melatih di Google Colab. Format `SavedModel` lebih direkomendasikan daripada `.h5` untuk *deployment* karena lebih modern dan fleksibel.
-    * **Bentuk Akhir:** File `model.h5` atau sebuah direktori `saved_model/`.
+### 5. Model Training Pipeline
+#### Dataset Preparation
+- Kaggle rice disease dataset
+- Train/Val split (80/20)
+- Image preprocessing
+- Data augmentation
 
----
-### ### 3. Rekomendasi *Tech Stack* yang Sesuai
+#### Training Strategy
+- Pre-trained weights
+- Transfer learning
+- Fine-tuning
+- Model evaluation
+- Performance optimization
 
-Berdasarkan kriteria Anda, berikut adalah *tech stack* yang paling sesuai:
+### 6. Deployment & Testing
+- Model conversion workflow
+- API testing
+- Performance benchmarking
+- Browser compatibility
+- Progressive enhancement
+- Error handling
 
-#### **Frontend: React + TensorFlow.js (Pilihan Anda Sudah Tepat)**
-* **Framework:** **React** (dengan Vite) seperti yang sudah Anda mulai.
-* **Styling:** **Tailwind CSS** untuk UI/UX yang superior.
-* **Machine Learning:** **TensorFlow.js** untuk memuat dan menjalankan *model saringan* format `tfjs` di browser.
-* **Status:** Fondasi frontend Anda sudah sangat baik.
+## 📊 Expected Outcomes
+- Real-time disease detection
+- Hybrid inference system
+- Responsive PWA
+- Offline functionality
+- Secure data handling
 
-#### **Backend: Python dengan FastAPI (Sangat Direkomendasikan)**
-* **Bahasa:** **Python**. Ini adalah bahasa "asli" untuk *machine learning*. Menggunakan Python memungkinkan Anda memuat model `.h5` atau `SavedModel` Anda secara langsung tanpa konversi tambahan dan memanfaatkan ekosistem ML yang kaya (NumPy, OpenCV, dll).
-* **Framework:** **FastAPI**.
-    * **Kecepatan Super:** FastAPI adalah salah satu framework web Python tercepat, ideal untuk API yang butuh latensi rendah.
-    * **Modern:** Mendukung *asynchronous programming* secara *native*, sangat efisien untuk menangani unggahan file dan tugas I/O lainnya.
-    * **Mudah Digunakan:** Memiliki dokumentasi otomatis (Swagger UI) yang mempercepat pengembangan dan pengujian.
-* **Alternatif (Node.js/Hapi.js):** Walaupun mungkin untuk menjalankan model TensorFlow di Node.js (menggunakan `@tensorflow/tfjs-node`), ini **kurang direkomendasikan** untuk model sekompleks EfficientNetB0. Anda akan kehilangan banyak optimasi, dan akses ke akselerasi GPU bisa lebih rumit. **Tetap gunakan Python untuk layanan prediksi ML**.
+## 🔍 Validation Metrics
+- Client-side inference speed
+- Server response time
+- Model accuracy
+- App size
+- Battery impact
+- Bandwidth usage
 
-#### **Database & Layanan Pendukung: Firebase (Pilihan Cepat & Skalabel)**
-* **Firebase Authentication:** Untuk menangani login dan register pengguna dengan aman tanpa perlu membangun sistem dari nol.
-* **Cloud Firestore:** Database NoSQL yang fleksibel dan *real-time*, sangat cocok untuk menyimpan data laporan deteksi, profil pengguna, dan informasi penyakit.
-* **Cloud Storage for Firebase:** Tempat ideal untuk menyimpan gambar-gambar yang diunggah oleh pengguna untuk arsip laporan.
+## 🛠 Tech Stack
+- Frontend: React, Vite, TensorFlow.js, Tailwind CSS
+- Backend: Python, FastAPI
+- ML: TensorFlow, EfficientNet models
+- Cloud: Firebase (Auth, Firestore, Storage)
+- Development: VS Code, Git
 
-Dengan *tech stack* dan arsitektur ini, Anda akan memiliki aplikasi yang sangat responsif di sisi pengguna dan backend yang kuat, efisien, serta siap untuk menangani beban kerja *machine learning* yang intensif.
+Rencana ini mengintegrasikan arsitektur hybrid untuk memberikan pengalaman pengguna optimal dengan mempertimbangkan batasan perangkat mobile dan kebutuhan akurasi tinggi.

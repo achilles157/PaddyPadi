@@ -9,20 +9,19 @@ import {
   orderBy, 
   deleteDoc, 
   doc,
-  serverTimestamp // Untuk timestamp otomatis dari server
+  serverTimestamp 
 } from 'firebase/firestore';
 
 const REPORTS_COLLECTION = 'reports';
 
-// Fungsi untuk membuat laporan baru
 export const addReport = async (reportData) => {
   try {
     const docRef = await addDoc(collection(db, REPORTS_COLLECTION), {
       ...reportData,
-      createdAt: serverTimestamp() // Otomatis menambahkan timestamp saat laporan dibuat
+      createdAt: serverTimestamp() 
     });
     console.log("Document written with ID: ", docRef.id);
-    return { id: docRef.id, ...reportData, createdAt: new Date() }; // Mengembalikan data dengan ID
+    return { id: docRef.id, ...reportData, createdAt: new Date() }; 
   } catch (e) {
     console.error("Error adding document: ", e);
     throw e;
