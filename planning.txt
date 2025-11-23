@@ -1,22 +1,22 @@
 # Rencana Pengembangan PaddyPadi PWA
 
-## 🎯 Tujuan Utama
+## Tujuan Utama
 - Membangun sistem deteksi penyakit padi real-time dengan arsitektur hybrid
 - Mengoptimalkan user experience dengan inference cepat
 - Meminimalkan penggunaan resource device dan bandwidth
 
-## 📋 Fase Pengembangan
+## Fase Pengembangan
 
 ### 1. Arsitektur Hybrid
 #### Model Saringan (Client-side)
-- Format: TensorFlow.js (uint8 quantized)
-- Base model: EfficientNetV2B2
+- Format: TensorFlow.js (kuantisasi float16)
+- Base model: EfficientNetV2B3
 - Tugas: Binary classification (suspicious/normal)
 - Target size: <10MB
 - Inference time: <500ms
 
 #### Model Ahli (Server-side)
-- Format: SavedModel/H5
+- Format: Keras terkuantisasi uint8
 - Base model: EfficientNetV2B3
 - Tugas: Multi-class classification (detailed diagnosis)
 - Berjalan di Python backend
@@ -66,14 +66,14 @@
 - Progressive enhancement
 - Error handling
 
-## 📊 Expected Outcomes
+##  Expected Outcomes
 - Real-time disease detection
 - Hybrid inference system
 - Responsive PWA
 - Offline functionality
 - Secure data handling
 
-## 🔍 Validation Metrics
+##  Validation Metrics
 - Client-side inference speed
 - Server response time
 - Model accuracy
@@ -81,7 +81,7 @@
 - Battery impact
 - Bandwidth usage
 
-## 🛠 Tech Stack
+##  Tech Stack
 - Frontend: React, Vite, TensorFlow.js, Tailwind CSS
 - Backend: Python, FastAPI
 - ML: TensorFlow, EfficientNet models

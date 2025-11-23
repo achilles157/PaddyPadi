@@ -12,6 +12,7 @@ const DiseaseDetailPage = lazy(() => import('./pages/DiseaseDetailPage'));
 const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ReportDetailPage = lazy (() => import('./pages/ReportDetailPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SaringanTestPage = lazy(() => import('./pages/SaringanTestPage'));
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth(); 
@@ -55,6 +56,7 @@ function App() {
                             <Route path="/disease/:diseaseId" element={<DiseaseDetailPage />} />
                             <Route path="profile" element={<ProfilePage />} />
                             <Route path="/result" element={<ResultPage />} /> 
+                            <Route path="test-saringan" element={<SaringanTestPage />} />
                         </Route>
 
                         <Route 

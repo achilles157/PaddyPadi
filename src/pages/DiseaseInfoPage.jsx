@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusCircle, Edit, Trash2 } from 'lucide-react'; 
-import { getDiseases, saveDisease, deleteDisease } from '../services/diseaseService'; 
+import { getDiseases, deleteDisease } from '../services/diseaseService'; 
 import { Spinner } from '../components/common/Spinner';
 import AddEditDiseaseForm from '../components/common/AddEditDiseaseForm'; 
 import toast from 'react-hot-toast'; 

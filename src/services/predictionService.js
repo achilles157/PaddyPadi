@@ -4,7 +4,7 @@ let model;
 const MODEL_URL = '/models/model.json'; 
 const IMAGE_SIZE = 256; 
 
-const CLASSES = [
+export const CLASSES = [
   'bacterial_leaf_blight',
   'bacterial_leaf_streak',
   'bacterial_panicle_blight',
@@ -20,17 +20,18 @@ const CLASSES = [
 export const loadModel = async () => {
   try {
     if (!model) {
-      console.log('Loading graph model (float16 quantized)...'); 
+      console.log('Loading graph model (uint8)...'); 
 
       model = await tf.loadGraphModel(MODEL_URL);
       console.log('Model loaded successfully.');
 
       tf.tidy(() => {
-        const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-        model.execute({ 'keras_tensor_25787': dummyTensor }); 
+        const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]).toFloat(); 
+        model.execute({ 'keras_tensor_1325': dummyTensor }); 
       });
       console.log('Model warmed up.');
     }
+    return model; // <--- TAMBAHAN PENTING
   } catch (error) {
     console.error('Error loading graph model:', error); 
     throw error;
@@ -41,8 +42,8 @@ const preprocessImage = (imageElement) => {
   return tf.tidy(() => {
     let tensor = tf.browser.fromPixels(imageElement);
     const resized = tf.image.resizeBilinear(tensor, [IMAGE_SIZE, IMAGE_SIZE]);
-    const normalized = resized.div(tf.scalar(255.0));
-    const batched = normalized.expandDims(0);
+    const floatTensor = resized.toFloat(); 
+    const batched = floatTensor.expandDims(0);
     return batched;
   });
 };
@@ -56,7 +57,7 @@ export const predict = async (imageElement) => {
   const tensor = preprocessImage(imageElement);
 
   try {
-    const resultTensor = model.execute({ 'keras_tensor_25787': tensor });
+    const resultTensor = model.execute({ 'keras_tensor_1325': tensor });
     const outputTensor = Array.isArray(resultTensor) ? resultTensor[0] : resultTensor;
     const predictionData = outputTensor.dataSync();
 
@@ -66,17 +67,19 @@ export const predict = async (imageElement) => {
     } else {
         resultTensor.dispose();
     }
-
-
     const predictionArray = Array.from(predictionData);
-
-    const maxConfidence = Math.max(...predictionArray);
-    const maxIndex = predictionArray.indexOf(maxConfidence);
-
-    const label = CLASSES[maxIndex];
-    const confidence = maxConfidence;
-
-    return { label, confidence, model: 'saringan-tfjs (graph-float16)' }; 
+    const allPredictions = predictionArray.map((confidence, index) => ({
+      label: CLASSES[index],
+      confidence: confidence
+    }));
+    allPredictions.sort((a, b) => b.confidence - a.confidence);
+    const topPrediction = allPredictions[0];
+    return {
+      label: topPrediction.label,
+      confidence: topPrediction.confidence,
+      model: 'saringan-tfjs (graph-uint8)',
+      allPredictions: allPredictions 
+    };
 
   } catch (error) {
       console.error("Error during graph model prediction:", error);
@@ -106,5 +109,6 @@ export const predictExpert = async (imageFile) => {
      return { ...result, model: 'expert-server (keras)' }; 
   } catch (error) {
      console.error('Error during expert prediction:', error);
+     throw error;
   }
 };
