@@ -12,10 +12,8 @@ export const ResultCard = ({
 }) => {
     const navigate = useNavigate();
 
-    // Langsung gunakan imageSrc karena sudah berupa URL yang valid
     const imageUrl = imageSrc;
 
-    // Menentukan judul berdasarkan hasil
     const title = isExpertResult ? "Hasil Analisis Ahli" : "Hasil Deteksi Awal";
     const confidenceText = confidence ? `${confidence.toFixed(1)}%` : 'N/A';
     const formattedPrediction = prediction.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

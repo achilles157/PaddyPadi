@@ -11,14 +11,11 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth(); 
 
-  // Data hasil prediksi dari `ScanPage`
   const { prediction, imageSrc } = location.state || {};
 
-  // State untuk data penyakit dari Firestore
   const [diseaseData, setDiseaseData] = useState(null); 
   const [loadingDisease, setLoadingDisease] = useState(true); 
 
-  // State untuk proses penyimpanan laporan
   const [savingReport, setSavingReport] = useState(false); 
   const [saveError, setSaveError] = useState(null); 
 
@@ -55,7 +52,6 @@ const ResultPage = () => {
     }
   }, [prediction]); 
 
-  // --- Fungsi untuk Menyimpan Laporan ---
   const handleSaveReport = async () => {
     if (!user) {
         setSaveError("Anda harus login untuk menyimpan laporan.");
@@ -77,7 +73,7 @@ const ResultPage = () => {
         predictionClass: prediction.class_name, 
         confidence: prediction.confidence,
         modelUsed: prediction.model, 
-        imageUrl: imageSrc, // Catatan: akan di improve ke firestore storage nanti 
+        imageUrl: imageSrc, 
         diseaseId: prediction.class_name, 
         diseaseDetails: diseaseData ? { 
             nama: diseaseData.nama,
@@ -88,9 +84,9 @@ const ResultPage = () => {
         timestamp: serverTimestamp(), 
       };
 
-      await addReport(reportData); // Panggil fungsi dari reportService.js
+      await addReport(reportData); 
       alert('Laporan berhasil disimpan!');
-      navigate('/reports'); // Navigasi ke halaman laporan setelah berhasil
+      navigate('/reports'); 
     } catch (err) {
       setSaveError('Gagal menyimpan laporan. ' + err.message);
       console.error('Error saving report:', err);
@@ -99,7 +95,6 @@ const ResultPage = () => {
       setSavingReport(false);
     }
   };
-  // --- Akhir Fungsi Simpan Laporan ---
   if (authLoading) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-center">
@@ -109,7 +104,6 @@ const ResultPage = () => {
       );
     }
 
-  // Jika tidak ada prediksi atau gambar
   if (!prediction || !imageSrc) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-center">
@@ -202,9 +196,8 @@ const ResultPage = () => {
           >
             {savingReport ? <Spinner size="sm" /> : 'Simpan Laporan'}
           </button>
-          {/* --- Akhir Tombol Simpan Laporan --- */}
           <button
-            onClick={() => navigate('/scan')} // Navigasi kembali ke halaman scan
+            onClick={() => navigate('/scan')} 
             className="mt-4 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-full transition duration-300"
           >
             Scan Lagi

@@ -51,7 +51,6 @@ const ReportPage = () => {
   if (authLoading || pageLoading) {
     return <Spinner message={authLoading ? "Checking authentication..." : "Loading reports..."} />;
   }
-  // Tampilkan pesan jika tidak terautentikasi
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-full text-red-500">
@@ -74,7 +73,6 @@ const ReportPage = () => {
     );
   }
 
-  // Jika authLoading selesai, tapi tidak terautentikasi (error sudah di-set di useEffect)
   if (!isAuthenticated || error === "You need to be logged in to view your reports.") {
     return (
       <div className="flex flex-col justify-center items-center h-full text-red-500">
@@ -86,7 +84,6 @@ const ReportPage = () => {
     );
   }
 
-  // Tampilkan error umum jika ada error setelah loading selesai
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-full text-red-500">

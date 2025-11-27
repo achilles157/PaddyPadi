@@ -5,7 +5,6 @@ import { ArrowLeft } from 'lucide-react';
 import { Spinner } from '../components/common/Spinner'; 
 
 const DiseaseDetailPage = () => {
-    // Gunakan useParams untuk mendapatkan diseaseId dari URL
     const { diseaseId } = useParams(); 
     const [disease, setDisease] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,7 +21,6 @@ const DiseaseDetailPage = () => {
             setLoading(true);
             setError(null);
             try {
-                // Gunakan diseaseId untuk fetch data
                 console.log("DiseaseDetailPage: Mencari dokumen dengan ID:", diseaseId); 
                 const data = await getDiseaseById(diseaseId);
                 if (data) {
@@ -83,23 +81,19 @@ const DiseaseDetailPage = () => {
             >
                 <ArrowLeft size={20} /> Kembali
             </button>
-                {/* Judul Penyakit */}
             <h1 className="text-3xl font-bold text-charcoal mb-6">{disease.nama}</h1>
-            {/* Bagian Penjelasan (Gejala) */}
             {disease.penjelasan && (
                 <div className="mb-6">
                     <h2 className="text-xl font-bold text-sage mb-2">Deskripsi / Gejala</h2>
                     <p className="text-charcoal whitespace-pre-line">{disease.penjelasan}</p>
                 </div>
             )}
-             {/* Bagian Penyebab */}
              {disease.penyebab && (
                 <div className="mb-6">
                     <h2 className="text-xl font-bold text-sage mb-2">Penyebab</h2>
                     <p className="text-charcoal whitespace-pre-line">{disease.penyebab}</p>
                 </div>
              )}
-            {/* Bagian Penanggulangan (Treatment/Pencegahan) */}
             {disease.penanggulangan_cepat && Array.isArray(disease.penanggulangan_cepat) && disease.penanggulangan_cepat.length > 0 && (
                  <div className="mb-6">
                     <h2 className="text-xl font-bold text-sage mb-2">Penanganan / Pencegahan</h2>

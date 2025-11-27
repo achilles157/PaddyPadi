@@ -14,10 +14,8 @@ const DiseaseInfoPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // State baru untuk menyimpan data penyakit yang sedang diedit
     const [editingDisease, setEditingDisease] = useState(null);
 
-    // Bungkus fetchDiseases dengan useCallback agar tidak dibuat ulang terus menerus
     const fetchDiseases = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -32,32 +30,27 @@ const DiseaseInfoPage = () => {
         } finally {
             setLoading(false);
         }
-    }, []); // Dependensi kosong
+    }, []); 
 
-    // Panggil fetchDiseases saat komponen dimuat
     useEffect(() => {
         fetchDiseases();
-    }, [fetchDiseases]); // <-- Tambahkan fetchDiseases ke dependensi
+    }, [fetchDiseases]); 
 
-    // Fungsi untuk membuka modal tambah
     const handleOpenAddModal = () => {
-        setEditingDisease(null); // Reset data edit saat menambah
+        setEditingDisease(null); 
         setIsModalOpen(true);
     };
 
-    // Fungsi untuk membuka modal edit
     const handleOpenEditModal = (disease) => {
-        setEditingDisease(disease); // Set data penyakit yang akan diedit
+        setEditingDisease(disease); 
         setIsModalOpen(true);
     };
 
-    // Fungsi untuk menutup modal
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setEditingDisease(null); // Reset data edit saat modal ditutup
+        setEditingDisease(null); 
     };
 
-    // Fungsi yang dipanggil saat form disubmit (baik add maupun edit)
     const handleFormSubmit = async (diseaseId, diseaseData) => {
         const isEditing = Boolean(editingDisease);
         const actionVerb = isEditing ? 'mengupdate' : 'menambah';
@@ -65,22 +58,21 @@ const DiseaseInfoPage = () => {
         try {
             await saveDisease(diseaseId, diseaseData);
             toast.success(`Data penyakit berhasil ${isEditing ? 'diupdate' : 'ditambahkan'}!`, { id: loadingToastId });
-            handleCloseModal(); // Tutup modal
-            fetchDiseases(); // Refresh daftar penyakit
+            handleCloseModal(); 
+            fetchDiseases(); 
         } catch (err) {
             console.error(`Error saving disease (${actionVerb}):`, err);
             toast.error(`Gagal ${actionVerb} data penyakit.`, { id: loadingToastId });
         }
     };
 
-     // Fungsi untuk menghapus penyakit (dengan konfirmasi)
     const handleDeleteDisease = async (diseaseId, diseaseName) => {
          if (window.confirm(`Apakah Anda yakin ingin menghapus "${diseaseName || diseaseId}"?`)) {
              const loadingToastId = toast.loading('Menghapus data...');
              try {
                 await deleteDisease(diseaseId);
                 toast.success('Data penyakit berhasil dihapus.', { id: loadingToastId });
-                fetchDiseases(); // Refresh daftar
+                fetchDiseases(); 
              } catch (err) {
                  console.error("Error deleting disease:", err);
                  toast.error('Gagal menghapus data penyakit.', { id: loadingToastId });
@@ -94,7 +86,7 @@ const DiseaseInfoPage = () => {
                 <h1 className="text-3xl font-bold text-charcoal">Info Penyakit</h1>
                 {isAdmin && (
                     <button
-                        onClick={handleOpenAddModal} // <-- Panggil fungsi buka modal
+                        onClick={handleOpenAddModal} 
                         className="bg-sage text-black px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-800 transition-all"
                     >
                         <PlusCircle size={20} /> Tambah
@@ -102,15 +94,13 @@ const DiseaseInfoPage = () => {
                 )}
             </div>
 
-            {/* Render Modal Form */}
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 bg-black opacity-50 z-40" // z-index lebih rendah dari form
-                    onClick={handleCloseModal} // Menutup modal jika backdrop diklik
+                    className="fixed inset-0 bg-black opacity-50 z-40" 
+                    onClick={handleCloseModal} 
                 ></div>
             )}
 
-            {/* Render Modal Form (akan muncul di atas backdrop karena z-index lebih tinggi) */}
             {isModalOpen && (
                 <AddEditDiseaseForm
                     initialData={editingDisease}
@@ -119,7 +109,6 @@ const DiseaseInfoPage = () => {
                 />
             )}
 
-            {/* Tampilkan daftar penyakit */}
             <div className="mt-8">
                 {loading ? (
                     <div className="flex justify-center items-center">
@@ -138,18 +127,17 @@ const DiseaseInfoPage = () => {
                                 >
                                     {disease.nama || disease.id.replace(/_/g, ' ')}
                                 </Link>
-                                {/* Tombol Admin (Edit & Hapus) */}
                                 {isAdmin && (
                                     <div className="flex-shrink-0 flex gap-2">
                                         <button
-                                            onClick={() => handleOpenEditModal(disease)} // Panggil fungsi edit
+                                            onClick={() => handleOpenEditModal(disease)}
                                             className="text-blue-600 hover:text-blue-800"
                                             title="Edit"
                                         >
                                             <Edit size={18} />
                                         </button>
                                          <button
-                                            onClick={() => handleDeleteDisease(disease.id, disease.nama)} // Panggil fungsi hapus
+                                            onClick={() => handleDeleteDisease(disease.id, disease.nama)} 
                                             className="text-red-600 hover:text-red-800"
                                             title="Hapus"
                                         >

@@ -13,11 +13,9 @@ const firebaseConfig = {
   appId: "1:483761534784:web:7f58680f2b82803668eca5"
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Ekspor layanan yang akan kita gunakan di seluruh aplikasi
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);

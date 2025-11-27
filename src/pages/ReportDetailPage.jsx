@@ -1,4 +1,3 @@
-// src/pages/ReportDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReportById } from '../services/reportService';
@@ -26,7 +25,7 @@ const ReportDetailPage = () => {
           setReport(fetchedReport);
         } else {
           setError("Report not found or you don't have permission to view it.");
-          navigate('/reports'); // Kembali ke daftar laporan jika tidak ditemukan atau tidak berizin
+          navigate('/reports'); 
         }
       } catch (err) {
         setError("Failed to fetch report details.");

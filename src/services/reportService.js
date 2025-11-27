@@ -15,7 +15,6 @@ import {
 
 const reportsCollectionRef = collection(db, 'reports');
 
-// Fungsi untuk mendapatkan semua laporan (atau laporan spesifik user)
 export const getReports = async (userId = null) => {
   try {
     let q;
@@ -32,7 +31,6 @@ export const getReports = async (userId = null) => {
   }
 };
 
-// Fungsi untuk mendapatkan laporan berdasarkan ID
 export const getReportById = async (reportId) => {
   try {
     const reportDocRef = doc(db, 'reports', reportId);
@@ -49,10 +47,8 @@ export const getReportById = async (reportId) => {
   }
 };
 
-// Fungsi untuk menambahkan laporan baru
 export const addReport = async (reportData) => {
   try {
-    // reportData harus menyertakan userId, imageURL, prediction, timestamp, dll.
     const newReportRef = await addDoc(reportsCollectionRef, reportData);
     return newReportRef.id;
   } catch (error) {
@@ -61,7 +57,6 @@ export const addReport = async (reportData) => {
   }
 };
 
-// Fungsi untuk memperbarui laporan
 export const updateReport = async (reportId, updatedData) => {
   try {
     const reportDocRef = doc(db, 'reports', reportId);
@@ -73,7 +68,6 @@ export const updateReport = async (reportId, updatedData) => {
   }
 };
 
-// Fungsi untuk menghapus laporan
 export const deleteReport = async (reportId) => {
   try {
     const reportDocRef = doc(db, 'reports', reportId);
@@ -85,7 +79,6 @@ export const deleteReport = async (reportId) => {
   }
 };
 
-// Fungsi untuk mendapatkan laporan terbaru 
 export const getLatestReports = async (count = 5, userId = null) => {
   try {
     let q;

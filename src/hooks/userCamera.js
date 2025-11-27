@@ -32,14 +32,12 @@ export const useCamera = () => {
         };
     }, []);
 
-    // FUNGSI TAKEPICTURE
     const takePicture = () => {
         if (!videoRef.current || !stream) {
             console.warn("Camera video not ready for capture.");
             return null;
         }
 
-        // Jika canvas belum ada, buat di memori (atau tambahkan ke DOM jika ingin terlihat)
         if (!canvasRef.current) {
             canvasRef.current = document.createElement('canvas');
         }
@@ -50,10 +48,8 @@ export const useCamera = () => {
         canvas.height = video.videoHeight;
         const context = canvas.getContext('2d');
         
-        // Gambar frame video ke canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Ambil data URL gambar
         const imageSrc = canvas.toDataURL('image/jpeg'); 
         return imageSrc;
     };

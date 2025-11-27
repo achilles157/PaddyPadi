@@ -45,11 +45,10 @@ const AuthPage = () => {
             if (isLogin) {
                 await login(email, password);
                 toast.success('Login berhasil!');
-                // Navigasi akan ditangani secara otomatis oleh router
             } else {
                 await register(email, password);
                 toast.success('Registrasi berhasil! Silakan login.');
-                setIsLogin(true); // Arahkan ke form login
+                setIsLogin(true); 
             }
         } catch (error) {
             toast.error(error.code || 'Terjadi kesalahan otentikasi.');

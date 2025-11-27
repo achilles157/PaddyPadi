@@ -24,14 +24,19 @@ export const loadModel = async () => {
 
       model = await tf.loadGraphModel(MODEL_URL);
       console.log('Model loaded successfully.');
-
+      console.log('Model loaded');
+      console.log('model.inputNodes =', model.inputNodes);
+      console.log('model.outputNodes =', model.outputNodes);
+      console.log('model.inputs =', model.inputs);        
+      console.log('model.outputs =', model.outputs);
+      console.log('model.signature =', model.signature);  
       tf.tidy(() => {
         const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]).toFloat(); 
-        model.execute({ 'keras_tensor_1325': dummyTensor }); 
+        model.execute({ 'keras_tensor_573': dummyTensor }); 
       });
       console.log('Model warmed up.');
     }
-    return model; // <--- TAMBAHAN PENTING
+    return model; 
   } catch (error) {
     console.error('Error loading graph model:', error); 
     throw error;
@@ -57,7 +62,7 @@ export const predict = async (imageElement) => {
   const tensor = preprocessImage(imageElement);
 
   try {
-    const resultTensor = model.execute({ 'keras_tensor_1325': tensor });
+    const resultTensor = model.execute({ 'keras_tensor_573': tensor });
     const outputTensor = Array.isArray(resultTensor) ? resultTensor[0] : resultTensor;
     const predictionData = outputTensor.dataSync();
 

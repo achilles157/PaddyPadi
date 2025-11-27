@@ -1,10 +1,6 @@
 import { db } from './firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-/**
- * Membuat dokumen pengguna baru di koleksi 'users' setelah registrasi.
- * @param {object} user - Objek user dari Firebase Auth setelah registrasi.
- */
 export const createUserProfileDocument = async (user) => {
     if (!user) return;
 

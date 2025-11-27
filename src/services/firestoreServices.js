@@ -47,7 +47,6 @@ export const getReportsByUserId = async (userId) => {
   }
 };
 
-// Fungsi untuk menghapus laporan
 export const deleteReport = async (reportId) => {
   try {
     await deleteDoc(doc(db, REPORTS_COLLECTION, reportId));

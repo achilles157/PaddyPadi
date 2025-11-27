@@ -8,14 +8,14 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(), tailwindcss(), // <-- 2. Tambahkan plugin ke array plugins
+    react(), tailwindcss(), 
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
         name: 'PaddyPadi',
         short_name: 'PaddyPadi',
         description: 'Deteksi Penyakit Tanaman Padi dengan AI',
-        theme_color: '#8A9A5B', // Warna sage kita
+        theme_color: '#8A9A5B', // Warna sage
         icons: [
           {
             src: 'paddypadi.png',

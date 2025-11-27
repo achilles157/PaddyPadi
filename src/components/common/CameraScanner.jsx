@@ -3,8 +3,6 @@ import * as tf from '@tensorflow/tfjs';
 import { Spinner } from './Spinner';
 
 const IMAGE_SIZE = 256;
-
-// Fungsi preprocessing (tetap sama)
 const preprocessVideoFrame = (videoElement) => {
     return tf.tidy(() => {
         const tensor = tf.browser.fromPixels(videoElement);
@@ -15,8 +13,6 @@ const preprocessVideoFrame = (videoElement) => {
     });
 };
 
-// HAPUS 'livePrediction' dari props. Kita masih perlu 'isProcessing'
-// untuk menyembunyikan tombol capture saat sedang loading.
 const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -26,7 +22,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
     const predictionIntervalRef = useRef(null);
     const isPredictingRef = useRef(false);
 
-    // Efek 1: Menyalakan kamera (tetap sama)
     useEffect(() => {
         const startCamera = async () => {
             try {
@@ -54,7 +49,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
         };
     }, []);
 
-    // Efek 2: Loop Rendering (tetap sama)
     useEffect(() => {
         if (!isCameraReady) return;
         const renderLoop = () => {
@@ -74,7 +68,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
         };
     }, [isCameraReady]);
 
-    // Efek 3: Loop Prediksi (tetap sama)
     useEffect(() => {
         if (!model || !isCameraReady) return; 
         const predictLoop = async () => {
@@ -84,7 +77,7 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
             try {
                 isPredictingRef.current = true;
                 const tensor = preprocessVideoFrame(videoRef.current);
-                const resultTensor = model.execute({ 'keras_tensor_1325': tensor }); //
+                const resultTensor = model.execute({ 'keras_tensor_573': tensor }); //
                 const predictionData = await resultTensor.data();
                 
                 if (onPrediction) {
@@ -108,7 +101,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
         };
     }, [model, isCameraReady, onPrediction]);
 
-    // Handler capture (tetap sama)
     const handleCapture = () => {
         if (!canvasRef.current || isProcessing) return; 
         const imageDataUrl = canvasRef.current.toDataURL('image/jpeg');
@@ -121,8 +113,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
         <div className="w-full relative rounded-lg overflow-hidden shadow-lg border-4 border-gray-200" style={{ aspectRatio: '1/1' }}>
             <video ref={videoRef} playsInline muted style={{ display: 'none' }} />
             <canvas ref={canvasRef} className="w-full h-full object-cover" />
-
-            {/* Tampilan Loading (Gabungan) */}
             {(!isCameraReady || !model) && (
                 <div className="absolute inset-0 flex flex-col justify-center items-center bg-black bg-opacity-50 text-white z-20">
                     <Spinner />
@@ -131,13 +121,6 @@ const CameraScanner = ({ model, onPrediction, onCapture, isProcessing }) => {
                     </p>
                 </div>
             )}
-
-            {/* --- PERUBAHAN DI SINI --- */}
-            
-            {/* 1. HAPUS DIV OVERLAY PREDIKSI DARI SINI */}
-            
-            {/* 2. Tombol Capture (Logo) */}
-            {/* Pindahkan ke 'bottom-6' agar lebih rendah */}
             {isCameraReady && model && !isProcessing && (
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
                     <button

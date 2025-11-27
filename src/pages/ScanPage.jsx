@@ -1,13 +1,11 @@
-// src/pages/ScanPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageUploader from '../components/common/ImageUploader';
 import CameraScanner from '../components/common/CameraScanner';
-// Pastikan 'predict' juga diimpor jika Anda mau pakai, tapi 'predictExpert' lebih utama
 import { loadModel, CLASSES, predictExpert } from '../services/predictionService';
 import { Spinner } from '../components/common/Spinner';
 
-// Fungsi utilitas (dari kode baru, ini diperlukan)
+
 function dataURLtoFile(dataurl, filename) {
     let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -20,16 +18,10 @@ function dataURLtoFile(dataurl, filename) {
 const ScanPage = () => {
     const [scanMode, setScanMode] = useState('upload');
     const navigate = useNavigate();
-
-    // State untuk model, prediksi live, dan loading
     const [model, setModel] = useState(null);
     const [livePrediction, setLivePrediction] = useState('Arahkan kamera ke daun padi');
-    // ganti nama 'isProcessing' agar konsisten dengan 'loading' di kode lama Anda
     const [loading, setLoading] = useState(false); 
-
-    // Efek untuk memuat model saringan
     useEffect(() => {
-        // Kita hanya muat model saringan jika mode kamera dipilih
         if (scanMode === 'camera') {
             setLivePrediction('Memuat model...');
             loadModel()
@@ -43,8 +35,6 @@ const ScanPage = () => {
                 });
         }
     }, [scanMode]);
-
-    // Callback untuk prediksi LIVE dari CameraScanner
     const handleLivePrediction = (predictionData) => {
         const topIndex = predictionData.indexOf(Math.max(...predictionData));
         const topLabel = CLASSES[topIndex];
@@ -54,26 +44,16 @@ const ScanPage = () => {
             setLivePrediction(`${topLabel} (${(topConfidence * 100).toFixed(0)}%)`);
         }
     };
-
-    // --- PERBAIKAN FUNGSI handleImageUpload ---
-    // Terima HANYA imageFile, karena ImageUploader hanya mengirim itu.
     const handleImageUpload = async (imageFile) => { 
         if (!imageFile) return;
-
         setLoading(true);
-        
-        // Buat imageSrc (URL preview) DI SINI
         const imageSrc = URL.createObjectURL(imageFile);
-
         try {
-            // Langsung panggil model ahli
             const expertResult = await predictExpert(imageFile);
-
             if (expertResult && expertResult.class_name) {
-                // Gunakan imageSrc yang baru kita buat
                 navigate('/result', { 
                     state: { 
-                        imageSrc: imageSrc, // <-- PERBAIKAN
+                        imageSrc: imageSrc, 
                         prediction: expertResult 
                     } 
                 });
@@ -86,8 +66,6 @@ const ScanPage = () => {
             setLoading(false);
         }
     };
-
-    // Fungsi handleCapture Anda sudah terlihat benar
     const handleCapture = async (imageDataUrl) => {
         setLoading(true); 
         setLivePrediction('Menganalisis gambar...');
@@ -104,35 +82,28 @@ const ScanPage = () => {
                         prediction: expertResult 
                     } 
                 });
-                // Jangan set loading(false) jika navigasi berhasil
             } else {
                 throw new Error("Menerima data tidak valid dari server.");
             }
         } catch (error) {
             console.error("Gagal mendapat prediksi ahli:", error); 
             setLivePrediction('Gagal menganalisis. Coba lagi.');
-            setLoading(false); // Set loading false HANYA jika gagal
+            setLoading(false); 
         }
     };
 
     return (
         <div className="p-4 pb-20">
-            
-            {/* Overlay loading (diambil dari kode lama Anda) */}
             {loading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-50">
                     <Spinner />
                     <p className="mt-4 text-lg text-white">Menganalisis (Model Ahli)...</p>
                 </div>
             )}
-
-            {/* Header (dari kode lama Anda) */}
             <div className="text-center mb-4">
                 <h1 className="text-3xl font-bold text-green-600">PaddyPadi 🌱</h1>
                 <p className="text-sm text-gray-500">Deteksi penyakit padi dengan AI</p>
             </div>
-
-            {/* Tombol Tab (dari kode lama Anda, disesuaikan sedikit) */}
             <div className="flex justify-center mb-6">
                 <div className="flex p-1 bg-gray-200 rounded-full">
                     <button
@@ -155,14 +126,10 @@ const ScanPage = () => {
                     </button>
                 </div>
             </div>
-
-            {/* Konten */}
             {scanMode === 'upload' ? (
-                // --- PERBAIKAN NAMA PROP ---
-                // 'ImageUploader' mengharapkan prop 'loading', bukan 'isProcessing'
                 <ImageUploader 
                     onImageUpload={handleImageUpload} 
-                    loading={loading} // <-- PERBAIKAN
+                    loading={loading} 
                 />
             ) : (
                 <div className="flex flex-col items-center">
@@ -170,10 +137,8 @@ const ScanPage = () => {
                         model={model} 
                         onPrediction={handleLivePrediction} 
                         onCapture={handleCapture}
-                        isProcessing={loading} // CameraScanner menggunakan 'isProcessing' (Sesuai file Anda)
+                        isProcessing={loading} 
                     />
-                    
-                    {/* Box hasil prediksi di bawah kamera */}
                     <div className="mt-4 w-full max-w-md text-center p-3 bg-gray-100 rounded-lg shadow-sm">
                         {loading && livePrediction === 'Menganalisis gambar...' ? (
                             <div className="flex justify-center items-center h-6">
@@ -190,8 +155,6 @@ const ScanPage = () => {
                     </div>
                 </div>
             )}
-
-            {/* Tautan Uji Coba (tetap sama) */}
             <div className="text-center mt-6">
                 <Link to="/test-saringan" className="text-sm text-green-600 hover:underline">
                     Buka halaman uji coba model saringan (TF.js)
