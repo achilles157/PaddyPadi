@@ -24,6 +24,8 @@ const ScanPage = () => {
     const [livePrediction, setLivePrediction] = useState(t('scan.instruction'));
     const [loading, setLoading] = useState(false);
 
+    const [scanStatus, setScanStatus] = useState('searching');
+
     useEffect(() => {
         if (scanMode === 'camera') {
             setLivePrediction(t('scan.loading_model'));
@@ -44,8 +46,13 @@ const ScanPage = () => {
         const topLabel = CLASSES[topIndex];
         const topConfidence = predictionData[topIndex];
 
-        if (topConfidence > 0.2) {
+        if (topConfidence > 0.7) {
+            setScanStatus('found');
+            // Translate the label if possible, or use raw label for now
             setLivePrediction(`${topLabel} (${(topConfidence * 100).toFixed(0)}%)`);
+        } else {
+            setScanStatus('searching');
+            setLivePrediction(t('scan.analyzing'));
         }
     };
     const handleImageUpload = async (imageFile) => {
@@ -140,6 +147,7 @@ const ScanPage = () => {
                         onPrediction={handleLivePrediction}
                         onCapture={handleCapture}
                         isProcessing={loading}
+                        scanStatus={scanStatus}
                     />
                     <div className="mt-4 w-full max-w-md text-center p-3 bg-gray-100 rounded-lg shadow-sm">
                         {loading && livePrediction === t('scan.analyzing') ? (

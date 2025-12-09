@@ -83,5 +83,14 @@
         "delete_success": "Laporan berhasil dihapus!",
         "delete_error": "Gagal menghapus laporan.",
         "try_again": "Coba Lagi"
+    },
+    "map": {
+        "loading": "Memuat peta dan laporan...",
+        "your_location": "Lokasi Anda",
+        "warning_title": "WASPADA!",
+        "warning_desc": "Terdeteksi {{count}} laporan penyakit dalam radius {{radius}}m dari lokasi Anda.",
+        "safe_title": "ZONA AMAN",
+        "safe_desc": "Tidak ada laporan penyakit dalam radius {{radius}}m.",
+        "nav_label": "Peta"
     }
 }

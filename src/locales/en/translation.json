@@ -83,5 +83,14 @@
         "delete_success": "Report deleted successfully!",
         "delete_error": "Failed to delete report.",
         "try_again": "Try Again"
+    },
+    "map": {
+        "loading": "Loading map and reports...",
+        "your_location": "Your Location",
+        "warning_title": "WARNING!",
+        "warning_desc": "Detected {{count}} disease reports within {{radius}}m of your location.",
+        "safe_title": "SAFE ZONE",
+        "safe_desc": "No disease reports within {{radius}}m.",
+        "nav_label": "Map"
     }
 }

@@ -69,6 +69,25 @@ const ResultPage = () => {
     setSavingReport(true);
     setSaveError(null);
 
+    // Get location
+    let locationData = null;
+    try {
+      const position = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error("Geolocation is not supported by your browser"));
+        } else {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        }
+      });
+      locationData = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+    } catch (geoError) {
+      console.warn("Could not get location:", geoError);
+      // Continue without location or ask user if they want to retry? For now, just continue.
+    }
+
     try {
       const reportData = {
         userId: user.uid,
@@ -84,6 +103,7 @@ const ResultPage = () => {
           penanggulangan_cepat: diseaseData.penanggulangan_cepat,
         } : null,
         timestamp: serverTimestamp(),
+        location: locationData
       };
 
       await addReport(reportData);

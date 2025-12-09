@@ -23,6 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 firebase.txt
+.firebase/
+planning.txt
+modelsaringanplan.txt
+*.csv
+*.txt
 .env
 .env.local
 .env.development.local
