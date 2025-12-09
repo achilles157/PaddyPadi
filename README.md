@@ -38,7 +38,7 @@ PaddyPadi adalah sebuah Progressive Web App (PWA) yang dirancang untuk membantu 
 
 1.  **Clone Repositori:**
     ```bash
-    git clone [https://github.com/nama-pengguna-anda/paddypadi.git](https://github.com/nama-pengguna-anda/paddypadi.git)
+    git clone https://github.com/achilles157/PaddyPadi.git
     cd paddypadi
     ```
 
