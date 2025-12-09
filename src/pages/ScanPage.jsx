@@ -4,58 +4,62 @@ import ImageUploader from '../components/common/ImageUploader';
 import CameraScanner from '../components/common/CameraScanner';
 import { loadModel, CLASSES, predictExpert } from '../services/predictionService';
 import { Spinner } from '../components/common/Spinner';
+import { useTranslation } from 'react-i18next';
 
 
 function dataURLtoFile(dataurl, filename) {
     let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
+    while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
-    return new File([u8arr], filename, {type:mime});
+    return new File([u8arr], filename, { type: mime });
 }
 
 const ScanPage = () => {
+    const { t } = useTranslation();
     const [scanMode, setScanMode] = useState('upload');
     const navigate = useNavigate();
     const [model, setModel] = useState(null);
-    const [livePrediction, setLivePrediction] = useState('Arahkan kamera ke daun padi');
-    const [loading, setLoading] = useState(false); 
+    const [livePrediction, setLivePrediction] = useState(t('scan.instruction'));
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         if (scanMode === 'camera') {
-            setLivePrediction('Memuat model...');
+            setLivePrediction(t('scan.loading_model'));
             loadModel()
                 .then(loadedModel => {
                     setModel(loadedModel);
-                    setLivePrediction('Arahkan kamera ke daun padi');
+                    setLivePrediction(t('scan.instruction'));
                 })
                 .catch(err => {
                     console.error("Gagal memuat model saringan:", err);
-                    setLivePrediction('Gagal memuat model.');
+                    setLivePrediction(t('scan.error_loading_model'));
                 });
         }
-    }, [scanMode]);
+    }, [scanMode, t]);
+
     const handleLivePrediction = (predictionData) => {
         const topIndex = predictionData.indexOf(Math.max(...predictionData));
         const topLabel = CLASSES[topIndex];
         const topConfidence = predictionData[topIndex];
-        
+
         if (topConfidence > 0.2) {
             setLivePrediction(`${topLabel} (${(topConfidence * 100).toFixed(0)}%)`);
         }
     };
-    const handleImageUpload = async (imageFile) => { 
+    const handleImageUpload = async (imageFile) => {
         if (!imageFile) return;
         setLoading(true);
         const imageSrc = URL.createObjectURL(imageFile);
         try {
             const expertResult = await predictExpert(imageFile);
             if (expertResult && expertResult.class_name) {
-                navigate('/result', { 
-                    state: { 
-                        imageSrc: imageSrc, 
-                        prediction: expertResult 
-                    } 
+                navigate('/result', {
+                    state: {
+                        imageSrc: imageSrc,
+                        prediction: expertResult
+                    }
                 });
             } else {
                 throw new Error("Menerima data tidak valid dari server.");
@@ -67,8 +71,8 @@ const ScanPage = () => {
         }
     };
     const handleCapture = async (imageDataUrl) => {
-        setLoading(true); 
-        setLivePrediction('Menganalisis gambar...');
+        setLoading(true);
+        setLivePrediction(t('scan.analyzing'));
 
         const imageFile = dataURLtoFile(imageDataUrl, 'capture.jpg');
 
@@ -76,19 +80,19 @@ const ScanPage = () => {
             const expertResult = await predictExpert(imageFile);
 
             if (expertResult && expertResult.class_name) {
-                navigate('/result', { 
-                    state: { 
-                        imageSrc: imageDataUrl, 
-                        prediction: expertResult 
-                    } 
+                navigate('/result', {
+                    state: {
+                        imageSrc: imageDataUrl,
+                        prediction: expertResult
+                    }
                 });
             } else {
                 throw new Error("Menerima data tidak valid dari server.");
             }
         } catch (error) {
-            console.error("Gagal mendapat prediksi ahli:", error); 
-            setLivePrediction('Gagal menganalisis. Coba lagi.');
-            setLoading(false); 
+            console.error("Gagal mendapat prediksi ahli:", error);
+            setLivePrediction(t('scan.error_loading_model')); // Reusing error message or generic error
+            setLoading(false);
         }
     };
 
@@ -97,50 +101,48 @@ const ScanPage = () => {
             {loading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-50">
                     <Spinner />
-                    <p className="mt-4 text-lg text-white">Menganalisis (Model Ahli)...</p>
+                    <p className="mt-4 text-lg text-white">{t('scan.analyzing')}</p>
                 </div>
             )}
             <div className="text-center mb-4">
-                <h1 className="text-3xl font-bold text-green-600">PaddyPadi 🌱</h1>
-                <p className="text-sm text-gray-500">Deteksi penyakit padi dengan AI</p>
+                <h1 className="text-3xl font-bold text-green-600">{t('scan.title')}</h1>
+                <p className="text-sm text-gray-500">{t('scan.subtitle')}</p>
             </div>
             <div className="flex justify-center mb-6">
                 <div className="flex p-1 bg-gray-200 rounded-full">
                     <button
                         onClick={() => setScanMode('upload')}
                         disabled={loading}
-                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                            scanMode === 'upload' ? 'bg-white shadow text-green-700' : 'text-gray-500'
-                        }`}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${scanMode === 'upload' ? 'bg-white shadow text-green-700' : 'text-gray-500'
+                            }`}
                     >
-                        Unggah Gambar
+                        {t('scan.upload_image')}
                     </button>
                     <button
                         onClick={() => setScanMode('camera')}
                         disabled={loading}
-                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                            scanMode === 'camera' ? 'bg-white shadow text-green-700' : 'text-gray-500'
-                        }`}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${scanMode === 'camera' ? 'bg-white shadow text-green-700' : 'text-gray-500'
+                            }`}
                     >
-                        Gunakan Kamera
+                        {t('scan.use_camera')}
                     </button>
                 </div>
             </div>
             {scanMode === 'upload' ? (
-                <ImageUploader 
-                    onImageUpload={handleImageUpload} 
-                    loading={loading} 
+                <ImageUploader
+                    onImageUpload={handleImageUpload}
+                    loading={loading}
                 />
             ) : (
                 <div className="flex flex-col items-center">
-                    <CameraScanner 
-                        model={model} 
-                        onPrediction={handleLivePrediction} 
+                    <CameraScanner
+                        model={model}
+                        onPrediction={handleLivePrediction}
                         onCapture={handleCapture}
-                        isProcessing={loading} 
+                        isProcessing={loading}
                     />
                     <div className="mt-4 w-full max-w-md text-center p-3 bg-gray-100 rounded-lg shadow-sm">
-                        {loading && livePrediction === 'Menganalisis gambar...' ? (
+                        {loading && livePrediction === t('scan.analyzing') ? (
                             <div className="flex justify-center items-center h-6">
                                 <Spinner />
                                 <span className="ml-2 text-gray-600 font-medium">
@@ -157,7 +159,7 @@ const ScanPage = () => {
             )}
             <div className="text-center mt-6">
                 <Link to="/test-saringan" className="text-sm text-green-600 hover:underline">
-                    Buka halaman uji coba model saringan (TF.js)
+                    {t('scan.test_link')}
                 </Link>
             </div>
         </div>

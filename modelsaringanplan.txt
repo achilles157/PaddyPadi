@@ -1,19 +1,10 @@
-# Rencana Pengembangan Model EfficientNetV2B2 untuk PWA PaddyPadi
-
-## 🎯 Tujuan Utama
-- Mengembangkan model deteksi penyakit padi yang ringan dan cepat
-- Mengoptimalkan untuk inferensi real-time di PWA
-- Mengkonversi ke format TensorFlow.js
-
-## 📋 Fase Pengembangan
-
 ### 1. Persiapan Dataset
 - Menggunakan dataset penyakit padi dari Kaggle
 - Pembagian data:
   - Training: 80%
   - Validasi: 20%
 - Preprocessing gambar:
-  - Resize ke 256x256 (ukuran standar EfficientNetV2B2)
+  - Resize ke 256x256 
   - Normalisasi piksel
 
 ### 2. Data Augmentasi
@@ -26,7 +17,7 @@
   - dan beberapa augmentasi lain
 
 ### 3. Arsitektur Model
-- Base model: EfficientNetV2B2 (pre-trained ImageNet)
+- Base model: MobileNetV3 (pre-trained ImageNet)
 - Modifikasi arsitektur:
   - Remove classification head
   - Add GlobalAveragePooling2D
@@ -76,5 +67,3 @@
 - Loading time
 - Inference speed
 - Prediction accuracy
-
-Rencana ini difokuskan pada pengembangan model EfficientNetV2B2 yang optimal untuk penggunaan web, dengan mempertimbangkan batasan dan kebutuhan PWA PaddyPadi.

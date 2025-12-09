@@ -9,8 +9,8 @@
 
 ### 1. Arsitektur Hybrid
 #### Model Saringan (Client-side)
-- Format: TensorFlow.js (kuantisasi float16)
-- Base model: EfficientNetV2B3
+- Format: TensorFlow.js (kuantisasi float16/uint8)
+- Base model: MobileNetV3
 - Tugas: Binary classification (suspicious/normal)
 - Target size: <10MB
 - Inference time: <500ms
@@ -87,5 +87,3 @@
 - ML: TensorFlow, EfficientNet models
 - Cloud: Firebase (Auth, Firestore, Storage)
 - Development: VS Code, Git
-
-Rencana ini mengintegrasikan arsitektur hybrid untuk memberikan pengalaman pengguna optimal dengan mempertimbangkan batasan perangkat mobile dan kebutuhan akurasi tinggi.

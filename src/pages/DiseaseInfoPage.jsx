@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react'; 
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react'; 
-import { getDiseases, deleteDisease } from '../services/diseaseService'; 
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { getDiseases, deleteDisease, saveDisease } from '../services/diseaseService';
 import { Spinner } from '../components/common/Spinner';
-import AddEditDiseaseForm from '../components/common/AddEditDiseaseForm'; 
-import toast from 'react-hot-toast'; 
+import AddEditDiseaseForm from '../components/common/AddEditDiseaseForm';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const DiseaseInfoPage = () => {
+    const { t } = useTranslation();
     const { isAdmin } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [diseases, setDiseases] = useState([]);
@@ -25,79 +27,78 @@ const DiseaseInfoPage = () => {
             setDiseases(data);
         } catch (err) {
             console.error("Error fetching diseases:", err);
-            setError("Gagal memuat data penyakit.");
-            toast.error("Gagal memuat data penyakit.");
+            setError(t('disease.error_loading'));
+            toast.error(t('disease.error_loading'));
         } finally {
             setLoading(false);
         }
-    }, []); 
+    }, [t]);
 
     useEffect(() => {
         fetchDiseases();
-    }, [fetchDiseases]); 
+    }, [fetchDiseases]);
 
     const handleOpenAddModal = () => {
-        setEditingDisease(null); 
+        setEditingDisease(null);
         setIsModalOpen(true);
     };
 
     const handleOpenEditModal = (disease) => {
-        setEditingDisease(disease); 
+        setEditingDisease(disease);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setEditingDisease(null); 
+        setEditingDisease(null);
     };
 
     const handleFormSubmit = async (diseaseId, diseaseData) => {
         const isEditing = Boolean(editingDisease);
-        const actionVerb = isEditing ? 'mengupdate' : 'menambah';
-        const loadingToastId = toast.loading(`Sedang ${actionVerb} data...`);
+        const loadingToastId = toast.loading(t('disease.saving'));
         try {
             await saveDisease(diseaseId, diseaseData);
-            toast.success(`Data penyakit berhasil ${isEditing ? 'diupdate' : 'ditambahkan'}!`, { id: loadingToastId });
-            handleCloseModal(); 
-            fetchDiseases(); 
+            toast.success(t('disease.save_success'), { id: loadingToastId });
+            handleCloseModal();
+            fetchDiseases();
         } catch (err) {
-            console.error(`Error saving disease (${actionVerb}):`, err);
-            toast.error(`Gagal ${actionVerb} data penyakit.`, { id: loadingToastId });
+            console.error(`Error saving disease:`, err);
+            toast.error(t('disease.save_error'), { id: loadingToastId });
         }
     };
 
     const handleDeleteDisease = async (diseaseId, diseaseName) => {
-         if (window.confirm(`Apakah Anda yakin ingin menghapus "${diseaseName || diseaseId}"?`)) {
-             const loadingToastId = toast.loading('Menghapus data...');
-             try {
+        if (window.confirm(t('disease.delete_confirm', { name: diseaseName || diseaseId }))) {
+            const loadingToastId = toast.loading(t('disease.saving'));
+            try {
                 await deleteDisease(diseaseId);
-                toast.success('Data penyakit berhasil dihapus.', { id: loadingToastId });
-                fetchDiseases(); 
-             } catch (err) {
-                 console.error("Error deleting disease:", err);
-                 toast.error('Gagal menghapus data penyakit.', { id: loadingToastId });
-             }
-         }
+                toast.success(t('disease.delete_success'), { id: loadingToastId });
+                fetchDiseases();
+            } catch (err) {
+                console.error("Error deleting disease:", err);
+                toast.error(t('disease.delete_error'), { id: loadingToastId });
+            }
+        }
     };
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-charcoal">Info Penyakit</h1>
+                <h1 className="text-3xl font-bold text-charcoal">{t('disease.title')}</h1>
                 {isAdmin && (
                     <button
-                        onClick={handleOpenAddModal} 
+                        onClick={handleOpenAddModal}
                         className="bg-sage text-black px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-800 transition-all"
                     >
-                        <PlusCircle size={20} /> Tambah
+                        <PlusCircle size={20} /> {t('disease.add')}
                     </button>
                 )}
             </div>
 
             {isModalOpen && (
                 <div
-                    className="fixed inset-0 bg-black opacity-50 z-40" 
-                    onClick={handleCloseModal} 
+                    className="fixed inset-0 bg-black opacity-50 z-40"
+                    onClick={handleCloseModal}
                 ></div>
             )}
 
@@ -113,7 +114,7 @@ const DiseaseInfoPage = () => {
                 {loading ? (
                     <div className="flex justify-center items-center">
                         <Spinner />
-                        <p className="ml-2">Memuat data penyakit...</p>
+                        <p className="ml-2">{t('disease.loading')}</p>
                     </div>
                 ) : error ? (
                     <p className="text-red-500 text-center">{error}</p>
@@ -132,14 +133,14 @@ const DiseaseInfoPage = () => {
                                         <button
                                             onClick={() => handleOpenEditModal(disease)}
                                             className="text-blue-600 hover:text-blue-800"
-                                            title="Edit"
+                                            title={t('disease.edit')}
                                         >
                                             <Edit size={18} />
                                         </button>
-                                         <button
-                                            onClick={() => handleDeleteDisease(disease.id, disease.nama)} 
+                                        <button
+                                            onClick={() => handleDeleteDisease(disease.id, disease.nama)}
                                             className="text-red-600 hover:text-red-800"
-                                            title="Hapus"
+                                            title={t('disease.delete')}
                                         >
                                             <Trash2 size={18} />
                                         </button>
@@ -149,7 +150,7 @@ const DiseaseInfoPage = () => {
                         ))}
                     </ul>
                 ) : (
-                    <p className="text-gray-500 text-center">Belum ada data penyakit yang tersedia.</p>
+                    <p className="text-gray-500 text-center">{t('disease.empty')}</p>
                 )}
             </div>
         </div>

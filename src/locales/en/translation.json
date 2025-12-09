@@ -1,0 +1,87 @@
+{
+    "app_name": "PaddyPadi",
+    "nav": {
+        "home": "Home",
+        "scan": "Scan",
+        "history": "History",
+        "diseases": "Diseases",
+        "profile": "Profile"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "save": "Save",
+        "cancel": "Cancel",
+        "back": "Back"
+    },
+    "scan": {
+        "title": "PaddyPadi 🌱",
+        "subtitle": "Rice disease detection with AI",
+        "instruction": "Point camera at rice leaf",
+        "loading_model": "Loading model...",
+        "error_loading_model": "Failed to load model.",
+        "analyzing": "Analyzing image...",
+        "upload_image": "Upload Image",
+        "use_camera": "Use Camera",
+        "test_link": "Open screening model test page (TF.js)"
+    },
+    "result": {
+        "scan_result": "Scan Result",
+        "confidence": "Confidence",
+        "model": "Model",
+        "loading_details": "Loading disease details...",
+        "description": "Description",
+        "causes": "Possible Causes",
+        "treatment": "Treatment Recommendations",
+        "no_details": "Details for this disease not found in database.",
+        "save_report": "Save Report",
+        "scan_again": "Scan Again",
+        "login_required": "You must be logged in to save reports.",
+        "save_success": "Report saved successfully!",
+        "error_save": "Failed to save report.",
+        "no_data": "No prediction data. Please go back and scan again.",
+        "back_to_scan": "Back to Scan"
+    },
+    "disease": {
+        "title": "Disease Info",
+        "add": "Add",
+        "loading": "Loading disease data...",
+        "error_loading": "Failed to load disease data.",
+        "empty": "No disease data available.",
+        "edit": "Edit",
+        "delete": "Delete",
+        "delete_confirm": "Are you sure you want to delete \"{{name}}\"?",
+        "delete_success": "Disease data deleted successfully.",
+        "delete_error": "Failed to delete disease data.",
+        "saving": "Saving data...",
+        "save_success": "Disease data saved successfully!",
+        "save_error": "Failed to save disease data."
+    },
+    "profile": {
+        "title": "My Profile",
+        "debug_status": "Debug Status",
+        "email": "Email",
+        "user_id": "User ID",
+        "admin_status": "Admin Status",
+        "is_admin": "YES (Admin)",
+        "is_user": "NO (Regular User)",
+        "logout": "Logout",
+        "logout_success": "Logout successful.",
+        "logout_error": "Logout failed."
+    },
+    "report": {
+        "title": "Your Scan Reports",
+        "empty": "You don't have any reports yet.",
+        "start_scan": "Start a new scan",
+        "login_required": "You need to be logged in to view your reports.",
+        "login_button": "Login / Register",
+        "prediction": "Prediction",
+        "date": "Date",
+        "view_details": "View Details",
+        "delete": "Delete",
+        "delete_confirm": "Are you sure you want to delete this report?",
+        "delete_success": "Report deleted successfully!",
+        "delete_error": "Failed to delete report.",
+        "try_again": "Try Again"
+    }
+}

@@ -1,0 +1,87 @@
+{
+    "app_name": "PaddyPadi",
+    "nav": {
+        "home": "Beranda",
+        "scan": "Scan",
+        "history": "Riwayat",
+        "diseases": "Penyakit",
+        "profile": "Profil"
+    },
+    "common": {
+        "loading": "Memuat...",
+        "error": "Terjadi kesalahan",
+        "save": "Simpan",
+        "cancel": "Batal",
+        "back": "Kembali"
+    },
+    "scan": {
+        "title": "PaddyPadi 🌱",
+        "subtitle": "Deteksi penyakit padi dengan AI",
+        "instruction": "Arahkan kamera ke daun padi",
+        "loading_model": "Memuat model...",
+        "error_loading_model": "Gagal memuat model.",
+        "analyzing": "Menganalisis gambar...",
+        "upload_image": "Unggah Gambar",
+        "use_camera": "Gunakan Kamera",
+        "test_link": "Buka halaman uji coba model saringan (TF.js)"
+    },
+    "result": {
+        "scan_result": "Hasil Scan",
+        "confidence": "Tingkat Kepercayaan",
+        "model": "Model",
+        "loading_details": "Memuat detail penyakit...",
+        "description": "Deskripsi",
+        "causes": "Kemungkinan Penyebab",
+        "treatment": "Rekomendasi Penanganan",
+        "no_details": "Detail untuk penyakit ini tidak ditemukan di database.",
+        "save_report": "Simpan Laporan",
+        "scan_again": "Scan Lagi",
+        "login_required": "Anda harus login untuk menyimpan laporan.",
+        "save_success": "Laporan berhasil disimpan!",
+        "error_save": "Gagal menyimpan laporan.",
+        "no_data": "Tidak ada data prediksi. Silakan kembali dan coba scan lagi.",
+        "back_to_scan": "Kembali ke Scan"
+    },
+    "disease": {
+        "title": "Info Penyakit",
+        "add": "Tambah",
+        "loading": "Memuat data penyakit...",
+        "error_loading": "Gagal memuat data penyakit.",
+        "empty": "Belum ada data penyakit yang tersedia.",
+        "edit": "Edit",
+        "delete": "Hapus",
+        "delete_confirm": "Apakah Anda yakin ingin menghapus \"{{name}}\"?",
+        "delete_success": "Data penyakit berhasil dihapus.",
+        "delete_error": "Gagal menghapus data penyakit.",
+        "saving": "Sedang menyimpan data...",
+        "save_success": "Data penyakit berhasil disimpan!",
+        "save_error": "Gagal menyimpan data penyakit."
+    },
+    "profile": {
+        "title": "Profil Saya",
+        "debug_status": "Status Debug",
+        "email": "Email",
+        "user_id": "User ID",
+        "admin_status": "Status Admin",
+        "is_admin": "YA (Admin)",
+        "is_user": "BUKAN (User Biasa)",
+        "logout": "Logout",
+        "logout_success": "Logout berhasil.",
+        "logout_error": "Gagal logout."
+    },
+    "report": {
+        "title": "Riwayat Laporan Anda",
+        "empty": "Anda belum memiliki laporan.",
+        "start_scan": "Mulai scan baru",
+        "login_required": "Anda harus login untuk melihat laporan.",
+        "login_button": "Login / Register",
+        "prediction": "Prediksi",
+        "date": "Tanggal",
+        "view_details": "Lihat Detail",
+        "delete": "Hapus",
+        "delete_confirm": "Apakah Anda yakin ingin menghapus laporan ini?",
+        "delete_success": "Laporan berhasil dihapus!",
+        "delete_error": "Gagal menghapus laporan.",
+        "try_again": "Coba Lagi"
+    }
+}
