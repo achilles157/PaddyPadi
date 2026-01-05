@@ -12,16 +12,21 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Reports: Key for user privacy
-    // Allow users to create reports
-    // Allow users to read/update/delete ONLY their own reports
+    // Reports: Key for user privacy but open for Epidemiology (Map)
+    // Reports: Key for user privacy but open for Epidemiology (Map)
     match /reports/{reportId} {
+      // Allow PUBLIC READ for reports (for the Map/Community feature)
+      allow read: if true;
+      
+      // Allow creation if the userId matches the auth uid
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if isOwner(resource.data.userId);
+      
+      // Update and Delete are STRICTLY limited to the owner
+      allow update, delete: if isOwner(resource.data.userId);
     }
 
     // Diseases: Public read, Admin write (managed via Console for now)
-    match /diseases/{diseaseId} {
+    match /disease/{diseaseId} {
       allow read: if true;
       allow write: if false; // Temporarily lock writes to Console/Admin SDK
     }

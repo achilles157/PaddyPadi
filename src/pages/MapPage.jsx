@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { getReports } from '../services/reportService';
 import { useTranslation } from 'react-i18next';
 import { Spinner } from '../components/common/Spinner';
+import { Locate } from 'lucide-react';
 
 // Fix for Leaflet marker icons in React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -126,11 +127,28 @@ const MapPage = () => {
                 </div>
             )}
 
-            <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} className="h-full w-full z-0">
+            <MapContainer
+                center={center}
+                zoom={zoom}
+                scrollWheelZoom={true}
+                className="h-full w-full z-0"
+                zoomControl={false} // Disable default zoom control
+            >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
+                {/* Custom Zoom Control Position */}
+                <ZoomControl position="bottomright" />
+
+                {/* Recenter Button */}
+                {userLocation && (
+                    <div className="leaflet-bottom leaflet-right" style={{ marginBottom: '80px', marginRight: '10px', pointerEvents: 'auto', zIndex: 1000 }}>
+                        <RecenterButton center={userLocation} />
+                    </div>
+                )}
+
 
                 {/* User Marker */}
                 {userLocation && (
@@ -175,20 +193,30 @@ const MapPage = () => {
                         )}
                     </Marker>
                 ))}
-
-                <RecenterMap center={center} />
             </MapContainer>
         </div>
     );
 };
 
-// Component to handle recentering when user location changes
-const RecenterMap = ({ center }) => {
+// Component to handle recentering
+const RecenterButton = ({ center }) => {
     const map = useMap();
-    useEffect(() => {
-        map.setView(center);
-    }, [center, map]);
-    return null;
+    const { t } = useTranslation();
+
+    const handleRecenter = () => {
+        map.flyTo(center, 15);
+    };
+
+    return (
+        <button
+            onClick={handleRecenter}
+            className="bg-white p-2 rounded-md shadow-md border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center"
+            title={t('map.recenter') || "Pusatkan Peta"}
+            style={{ width: '34px', height: '34px' }}
+        >
+            <Locate className="w-5 h-5 text-gray-700" />
+        </button>
+    );
 };
 
 export default MapPage;

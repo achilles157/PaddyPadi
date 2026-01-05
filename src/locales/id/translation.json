@@ -55,19 +55,31 @@
         "delete_error": "Gagal menghapus data penyakit.",
         "saving": "Sedang menyimpan data...",
         "save_success": "Data penyakit berhasil disimpan!",
-        "save_error": "Gagal menyimpan data penyakit."
+        "save_error": "Gagal menyimpan data penyakit.",
+        "help": "Bantuan Penggunaan"
     },
     "profile": {
         "title": "Profil Saya",
-        "debug_status": "Status Debug",
+        "account_section": "Akun",
+        "settings_section": "Pengaturan",
+        "info_section": "Informasi",
         "email": "Email",
         "user_id": "User ID",
         "admin_status": "Status Admin",
-        "is_admin": "YA (Admin)",
-        "is_user": "BUKAN (User Biasa)",
-        "logout": "Logout",
-        "logout_success": "Logout berhasil.",
-        "logout_error": "Gagal logout."
+        "is_admin": "Admin",
+        "is_user": "User",
+        "logout": "Keluar Aplikasi",
+        "logout_success": "Berhasil keluar.",
+        "logout_error": "Gagal keluar.",
+        "notifications": "Notifikasi",
+        "notif_enabled": "Aktif",
+        "notif_disabled": "Ketuk untuk mengaktifkan",
+        "clear_cache": "Hapus Data & Cache",
+        "clear_cache_confirm": "Ini akan menghapus data cache aplikasi dan me-refresh halaman. Lanjutkan?",
+        "cache_cleared": "Cache berhasil dihapus.",
+        "about_app": "Tentang Aplikasi",
+        "help": "Bantuan Penggunaan",
+        "language": "Bahasa"
     },
     "report": {
         "title": "Riwayat Laporan Anda",
@@ -91,6 +103,7 @@
         "warning_desc": "Terdeteksi {{count}} laporan penyakit dalam radius {{radius}}m dari lokasi Anda.",
         "safe_title": "ZONA AMAN",
         "safe_desc": "Tidak ada laporan penyakit dalam radius {{radius}}m.",
-        "nav_label": "Peta"
+        "nav_label": "Peta",
+        "recenter": "Pusatkan Peta"
     }
 }

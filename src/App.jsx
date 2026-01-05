@@ -16,6 +16,8 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const MapPage = lazy(() => import('./pages/MapPage'));
 const SaringanTestPage = lazy(() => import('./pages/SaringanTestPage'));
 
+const HomePage = lazy(() => import('./pages/HomePage'));
+
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
 
@@ -50,7 +52,8 @@ function App() {
                                 </ProtectedRoute>
                             }
                         >
-                            <Route index element={<Navigate to="/scan" replace />} />
+                            <Route index element={<Navigate to="/home" replace />} />
+                            <Route path="home" element={<HomePage />} />
                             <Route path="scan" element={<ScanPage />} />
                             <Route path="reports" element={<ReportPage />} />
                             <Route path="/report/:reportId" element={<ReportDetailPage />} />

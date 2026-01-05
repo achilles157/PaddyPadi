@@ -59,15 +59,26 @@
     },
     "profile": {
         "title": "My Profile",
-        "debug_status": "Debug Status",
+        "account_section": "Account",
+        "settings_section": "Settings",
+        "info_section": "Information",
         "email": "Email",
         "user_id": "User ID",
         "admin_status": "Admin Status",
-        "is_admin": "YES (Admin)",
-        "is_user": "NO (Regular User)",
+        "is_admin": "Admin",
+        "is_user": "User",
         "logout": "Logout",
         "logout_success": "Logout successful.",
-        "logout_error": "Logout failed."
+        "logout_error": "Logout failed.",
+        "notifications": "Notifications",
+        "notif_enabled": "Enabled",
+        "notif_disabled": "Tap to enable",
+        "clear_cache": "Clear Data & Cache",
+        "clear_cache_confirm": "This will clear local cache and refresh the app. Continue?",
+        "cache_cleared": "Cache cleared successfully.",
+        "about_app": "About App",
+        "help": "Help Guide",
+        "language": "Language"
     },
     "report": {
         "title": "Your Scan Reports",
@@ -91,6 +102,7 @@
         "warning_desc": "Detected {{count}} disease reports within {{radius}}m of your location.",
         "safe_title": "SAFE ZONE",
         "safe_desc": "No disease reports within {{radius}}m.",
-        "nav_label": "Map"
+        "nav_label": "Map",
+        "recenter": "Recenter Map"
     }
 }

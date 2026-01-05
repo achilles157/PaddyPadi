@@ -35,16 +35,7 @@ export const MainLayout = () => {
         <div className="bg-off-white min-h-screen w-full pb-24 relative">
             <Toaster position="top-center" />
 
-            {/* Language Switcher */}
-            <div className="absolute top-4 right-4 z-50">
-                <button
-                    onClick={toggleLanguage}
-                    className="bg-white/90 backdrop-blur-sm shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-sage border border-sage/20 hover:bg-sage/10 transition-colors flex items-center gap-1"
-                >
-                    <span>{i18n.language === 'id' ? '🇮🇩' : '🇺🇸'}</span>
-                    <span>{i18n.language === 'id' ? 'ID' : 'EN'}</span>
-                </button>
-            </div>
+            <div className="p-0"></div> {/* Removed Language Switcher */}
 
             <main className="p-4 pt-14">
                 <Outlet />

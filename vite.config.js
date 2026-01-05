@@ -8,7 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(), tailwindcss(), 
+    react(), tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
@@ -18,12 +18,12 @@ export default defineConfig({
         theme_color: '#8A9A5B', // Warna sage
         icons: [
           {
-            src: 'paddypadi.png',
+            src: 'logopaddy.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'paddypadi.png',
+            src: 'logopaddy.png',
             sizes: '512x512',
             type: 'image/png'
           }
