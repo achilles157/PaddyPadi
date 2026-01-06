@@ -3,6 +3,13 @@ import axios from 'axios';
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
+/**
+ * Mengambil data cuaca dari OpenWeatherMap API.
+ * Jika API key tidak tersedia, akan menggunakan data mock.
+ * @param {number} lat - Latitude lokasi
+ * @param {number} lon - Longitude lokasi
+ * @returns {Promise<Object>} Data cuaca dari API atau mock data
+ */
 export const getWeather = async (lat, lon) => {
     if (!API_KEY) {
         console.warn("OpenWeatherMap API Key is missing. Using mock data.");
@@ -25,15 +32,21 @@ export const getWeather = async (lat, lon) => {
     }
 };
 
+
+/**
+ * Menganalisis data cuaca untuk menghitung risiko penyakit tanaman.
+ * @param {Object} weatherData - Data cuaca dari OpenWeatherMap API
+ * @returns {Object|null} Analisis risiko dengan status dan daftar risiko
+ */
 export const calculateDiseaseRisk = (weatherData) => {
     if (!weatherData || !weatherData.main) return null;
 
     const { temp, humidity } = weatherData.main;
-    const weatherId = weatherData.weather[0].id; // 2xx: Thunderstorm, 3xx: Drizzle, 5xx: Rain
+    const weatherId = weatherData.weather[0].id;
 
     let risks = [];
 
-    // High Humidity (> 80%)
+    // Kelembaban tinggi (>80%) memicu pertumbuhan jamur
     if (humidity > 80) {
         risks.push({
             type: 'Jamur (Fungal)',

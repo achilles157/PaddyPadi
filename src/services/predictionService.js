@@ -17,24 +17,21 @@ export const CLASSES = [
   'tungro'
 ];
 
+/**
+ * Memuat model TensorFlow.js untuk prediksi penyakit padi.
+ * Model di-cache setelah loading pertama untuk performa optimal.
+ * @returns {Promise<tf.GraphModel>} Model yang sudah dimuat
+ * @throws {Error} Jika gagal memuat model
+ */
 export const loadModel = async () => {
   try {
     if (!model) {
-      console.log('Loading graph model (uint8)...');
-
       model = await tf.loadGraphModel(MODEL_URL);
-      console.log('Model loaded successfully.');
-      console.log('Model loaded');
-      console.log('model.inputNodes =', model.inputNodes);
-      console.log('model.outputNodes =', model.outputNodes);
-      console.log('model.inputs =', model.inputs);
-      console.log('model.outputs =', model.outputs);
-      console.log('model.signature =', model.signature);
+      // Warmup model dengan dummy tensor untuk menghindari delay pada prediksi pertama
       tf.tidy(() => {
         const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]).toFloat();
         model.execute({ 'keras_tensor_573': dummyTensor });
       });
-      console.log('Model warmed up.');
     }
     return model;
   } catch (error) {
@@ -43,6 +40,12 @@ export const loadModel = async () => {
   }
 };
 
+/**
+ * Preprocessing gambar untuk input model.
+ * Mengubah HTMLImageElement menjadi tensor dengan ukuran yang sesuai.
+ * @param {HTMLImageElement} imageElement - Elemen gambar yang akan diproses
+ * @returns {tf.Tensor4D} Tensor 4D siap untuk prediksi
+ */
 const preprocessImage = (imageElement) => {
   return tf.tidy(() => {
     let tensor = tf.browser.fromPixels(imageElement);
@@ -53,6 +56,11 @@ const preprocessImage = (imageElement) => {
   });
 };
 
+/**
+ * Melakukan prediksi penyakit pada gambar daun padi.
+ * @param {HTMLImageElement} imageElement - Elemen gambar daun padi
+ * @returns {Promise<Object|null>} Hasil prediksi dengan label, confidence, dan model info
+ */
 export const predict = async (imageElement) => {
   if (!model) {
     console.error('Graph model not loaded.');
@@ -93,8 +101,13 @@ export const predict = async (imageElement) => {
   }
 };
 
+/**
+ * Prediksi menggunakan model expert (fallback ke local TFJS).
+ * Digunakan ketika server backend tidak tersedia.
+ * @param {File} imageFile - File gambar yang akan diprediksi
+ * @returns {Promise<Object>} Hasil prediksi dengan class_name, confidence, dan model info
+ */
 export const predictExpert = async (imageFile) => {
-  console.log('Switching Expert Model to Local Saringan Model (TFJS) due to server unavailability.');
 
   // Create an HTMLImageElement from the file to pass to the local predict function
   const imgElement = document.createElement('img');

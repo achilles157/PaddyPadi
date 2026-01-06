@@ -2,26 +2,32 @@ import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "./firebase";
 import toast from "react-hot-toast";
 
+/**
+ * Meminta dan mengambil FCM token untuk push notification.
+ * @returns {Promise<string|null>} FCM token atau null jika gagal
+ */
 export const requestForToken = async () => {
     try {
         const currentToken = await getToken(messaging, { vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY });
         if (currentToken) {
-            console.log('current token for client: ', currentToken);
             return currentToken;
         } else {
-            console.log('No registration token available. Request permission to generate one.');
             return null;
         }
     } catch (err) {
-        console.log('An error occurred while retrieving token. ', err);
+        console.error('Error retrieving FCM token:', err);
         return null;
     }
 };
 
+/**
+ * Mendaftarkan listener untuk pesan FCM yang masuk.
+ * @returns {Promise<Object>} Payload pesan yang diterima
+ */
 export const onMessageListener = () =>
     new Promise((resolve) => {
         onMessage(messaging, (payload) => {
-            console.log("payload", payload);
             resolve(payload);
         });
     });
+

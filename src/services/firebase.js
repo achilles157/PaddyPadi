@@ -1,3 +1,10 @@
+/**
+ * Firebase Configuration dan Initialization
+ * 
+ * File ini menginisialisasi koneksi Firebase dengan konfigurasi
+ * dari environment variables. Mengexport instance auth, db (Firestore),
+ * dan messaging (FCM) untuk digunakan di seluruh aplikasi.
+ */
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -16,6 +23,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+/** Firebase Authentication instance */
 export const auth = getAuth(app);
+
+/** Firestore Database instance */
 export const db = getFirestore(app);
+
+/** Firebase Cloud Messaging instance */
 export const messaging = getMessaging(app);

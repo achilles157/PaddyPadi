@@ -25,8 +25,8 @@ const HomePage = () => {
                         setRiskAnalysis(calculateDiseaseRisk(data));
                         setLoading(false);
                     }, async () => {
-                        console.log("Location permission denied. Using default/mock.");
-                        const data = await getWeather(null, null); // Will trigger mock in service
+                        // Location permission denied, using default/mock data
+                        const data = await getWeather(null, null);
                         setWeather(data);
                         setRiskAnalysis(calculateDiseaseRisk(data));
                         setLoading(false);
