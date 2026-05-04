@@ -58,8 +58,8 @@ export const loadModel = async () => {
 
 /**
  * Preprocessing gambar untuk input model.
- * Mengubah HTMLImageElement menjadi tensor dengan ukuran yang sesuai.
- * @param {HTMLImageElement} imageElement - Elemen gambar yang akan diproses
+ * Melakukan scaling piksel dari [0, 255] menjadi [0, 1]
+ * @param {HTMLImageElement} imageElement - Elemen gambar
  * @returns {tf.Tensor4D} Tensor 4D siap untuk prediksi
  */
 const preprocessImage = (imageElement) => {
@@ -67,7 +67,12 @@ const preprocessImage = (imageElement) => {
     let tensor = tf.browser.fromPixels(imageElement);
     const resized = tf.image.resizeBilinear(tensor, [IMAGE_SIZE, IMAGE_SIZE]);
     const floatTensor = resized.toFloat();
-    const batched = floatTensor.expandDims(0);
+
+    // PERBAIKAN: Normalisasi nilai piksel ke rentang 0.0 - 1.0
+    // Ini mensimulasikan cara MobileNetV3 memproses input di Keras.
+    const normalized = floatTensor.div(tf.scalar(255.0));
+
+    const batched = normalized.expandDims(0);
     return batched;
   });
 };
