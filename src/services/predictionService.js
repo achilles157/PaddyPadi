@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 
 let model;
-const MODEL_URL = '/models/model.json';
+const MODEL_URL = '/models/model.json'; // Pastikan path ini benar mengarah ke folder yang berisi model.json dan file .bin
 const IMAGE_SIZE = 256;
 
 export const CLASSES = [
@@ -27,11 +27,27 @@ export const loadModel = async () => {
   try {
     if (!model) {
       model = await tf.loadGraphModel(MODEL_URL);
+
       // Warmup model dengan dummy tensor untuk menghindari delay pada prediksi pertama
       tf.tidy(() => {
         const dummyTensor = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]).toFloat();
-        model.execute({ 'keras_tensor_573': dummyTensor });
+
+        // MENGAMBIL NAMA INPUT SECARA DINAMIS DARI MODEL
+        // Karena kita menggunakan GraphModel yang diekspor dari SavedModel,
+        // struktur inputs-nya berbentuk array of objects.
+        let inputName = '';
+        if (model.inputs && model.inputs.length > 0) {
+          // Ambil nama node input pertama (misalnya 'input_daun_padi' atau 'serving_default_input_daun_padi:0')
+          inputName = model.inputs[0].name;
+        } else {
+          // Fallback jika karena alasan tertentu property name tidak terbaca langsung
+          inputName = Object.keys(model.modelSignature['inputs'])[0];
+        }
+
+        // Jalankan eksekusi warmup menggunakan nama dinamis
+        model.execute({ [inputName]: dummyTensor });
       });
+      console.log("Model PaddyPadi (Graph) berhasil dimuat dan di-warmup!");
     }
     return model;
   } catch (error) {
@@ -63,34 +79,51 @@ const preprocessImage = (imageElement) => {
  */
 export const predict = async (imageElement) => {
   if (!model) {
-    console.error('Graph model not loaded.');
+    console.error('Graph model not loaded. Please call loadModel() first.');
     return null;
   }
 
   const tensor = preprocessImage(imageElement);
 
   try {
-    const resultTensor = model.execute({ 'keras_tensor_573': tensor });
+    // MENGAMBIL NAMA INPUT SECARA DINAMIS
+    let inputName = '';
+    if (model.inputs && model.inputs.length > 0) {
+      inputName = model.inputs[0].name;
+    } else {
+      inputName = Object.keys(model.modelSignature['inputs'])[0];
+    }
+
+    // Eksekusi prediksi dengan nama dinamis
+    const resultTensor = model.execute({ [inputName]: tensor });
+
+    // Penanganan output (bisa berupa array tensor atau single tensor)
     const outputTensor = Array.isArray(resultTensor) ? resultTensor[0] : resultTensor;
     const predictionData = outputTensor.dataSync();
 
+    // Pembersihan memori WebGL
     tensor.dispose();
     if (Array.isArray(resultTensor)) {
       resultTensor.forEach(t => t.dispose());
     } else {
       resultTensor.dispose();
     }
+
+    // Pemetaan hasil ke label kelas
     const predictionArray = Array.from(predictionData);
     const allPredictions = predictionArray.map((confidence, index) => ({
       label: CLASSES[index],
       confidence: confidence
     }));
+
+    // Urutkan dari confidence tertinggi ke terendah
     allPredictions.sort((a, b) => b.confidence - a.confidence);
     const topPrediction = allPredictions[0];
+
     return {
       label: topPrediction.label,
       confidence: topPrediction.confidence,
-      model: 'saringan-tfjs (graph-uint8)',
+      model: 'PaddyPadi-MobileNetV3Large (Graph-uint8)', // Update nama model agar lebih jelas
       allPredictions: allPredictions
     };
 
@@ -126,7 +159,7 @@ export const predictExpert = async (imageFile) => {
           resolve({
             ...result,
             class_name: result.label, // Map 'label' to 'class_name' for compatibility with UI
-            model: 'expert-local-fallback (saringan-tfjs)'
+            model: 'expert-local-fallback (PaddyPadi-TFJS)'
           });
         } else {
           reject(new Error("Local prediction failed to produce a result."));
